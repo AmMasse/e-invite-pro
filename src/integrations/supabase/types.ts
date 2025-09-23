@@ -14,7 +14,165 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_date: string | null
+          id: string
+          name: string
+          organizer_name: string
+          password: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_date?: string | null
+          id?: string
+          name: string
+          organizer_name: string
+          password: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_date?: string | null
+          id?: string
+          name?: string
+          organizer_name?: string
+          password?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      guests: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_id: string
+          id: string
+          name: string
+          phone: string | null
+          rsvp_at: string | null
+          rsvp_status: string | null
+          unique_link: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_id: string
+          id?: string
+          name: string
+          phone?: string | null
+          rsvp_at?: string | null
+          rsvp_status?: string | null
+          unique_link: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          rsvp_at?: string | null
+          rsvp_status?: string | null
+          unique_link?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invitations: {
+        Row: {
+          created_at: string
+          custom_message: string | null
+          event_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_message?: string | null
+          event_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_message?: string | null
+          event_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      itinerary_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_time: string | null
+          event_id: string
+          id: string
+          lat: number | null
+          lng: number | null
+          location: string | null
+          start_time: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_id: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          start_time: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_id?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itinerary_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
