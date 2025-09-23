@@ -1,9 +1,32 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Calendar, Users, Upload, Smartphone } from "lucide-react";
+import { Calendar, Users, Upload, Smartphone, CheckCircle } from "lucide-react";
+import ImplementationTodo from "@/components/ImplementationTodo";
+import { useState } from "react";
 
 const Index = () => {
+  const [showTodo, setShowTodo] = useState(false);
+
+  if (showTodo) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-primary/5">
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-6">
+            <Button 
+              onClick={() => setShowTodo(false)}
+              variant="outline"
+              className="mb-4"
+            >
+              ← Back to Home
+            </Button>
+          </div>
+          <ImplementationTodo />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-primary/5">
       {/* Hero Section */}
@@ -18,12 +41,24 @@ const Index = () => {
               Create stunning digital invitations, manage guest lists with Excel, and deliver unforgettable event experiences.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link to="/organizer-login">Organizer Login</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10">
                 <Link to="/admin">Admin Access</Link>
+              </Button>
+            </div>
+
+            {/* Development Progress Button */}
+            <div className="mb-12">
+              <Button 
+                onClick={() => setShowTodo(true)}
+                variant="outline" 
+                className="border-accent text-accent hover:bg-accent/10"
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                View Implementation Progress
               </Button>
             </div>
 
