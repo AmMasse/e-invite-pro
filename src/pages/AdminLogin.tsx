@@ -3,24 +3,48 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Shield } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminLogin = () => {
   const [masterId, setMasterId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { loginAsAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // TODO: Implement admin authentication
-    console.log("Admin login:", { masterId, password });
-    
-    setTimeout(() => {
+    try {
+      const result = await loginAsAdmin(masterId, password);
+      
+      if (result.success) {
+        toast({
+          title: "Admin login successful",
+          description: "Welcome to the master admin panel",
+        });
+        navigate("/admin-dashboard");
+      } else {
+        toast({
+          title: "Login failed",
+          description: result.error || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

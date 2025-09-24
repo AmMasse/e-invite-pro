@@ -22,7 +22,7 @@ const phases: Phase[] = [
     id: 'phase1',
     title: 'Phase 1: Core Foundation & Authentication 🔐',
     description: 'Set up basic app structure and access control',
-    status: 'in-progress',
+    status: 'completed',
     items: [
       { id: '1.1', title: 'Update main landing page with E-Invite branding', completed: true },
       { id: '1.2', title: 'Create professional design system for invitations', completed: true },
@@ -30,8 +30,8 @@ const phases: Phase[] = [
       { id: '1.4', title: 'Design database schema (events, guests, invitations, itinerary)', completed: true },
       { id: '1.5', title: 'Create organizer login page', completed: true },
       { id: '1.6', title: 'Create master admin login page', completed: true },
-      { id: '1.7', title: 'Implement authentication logic', completed: false, inProgress: true },
-      { id: '1.8', title: 'Create protected routes and session management', completed: false }
+      { id: '1.7', title: 'Implement authentication logic', completed: true },
+      { id: '1.8', title: 'Create protected routes and session management', completed: true }
     ]
   },
   {
@@ -40,7 +40,7 @@ const phases: Phase[] = [
     description: 'Core functionality for guest list management',
     status: 'pending',
     items: [
-      { id: '2.1', title: 'Create Excel upload interface for organizers', completed: false },
+      { id: '2.1', title: 'Create Excel upload interface for admins', completed: false },
       { id: '2.2', title: 'Implement Excel parsing (names, emails, phones)', completed: false },
       { id: '2.3', title: 'Add data validation and error handling', completed: false },
       { id: '2.4', title: 'Create preview for uploaded data', completed: false },

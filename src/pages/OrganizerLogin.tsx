@@ -3,24 +3,48 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, LogIn } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const OrganizerLogin = () => {
   const [eventId, setEventId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { loginAsOrganizer } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // TODO: Implement organizer authentication
-    console.log("Organizer login:", { eventId, password });
-    
-    setTimeout(() => {
+    try {
+      const result = await loginAsOrganizer(eventId, password);
+      
+      if (result.success) {
+        toast({
+          title: "Login successful",
+          description: "Welcome to your event dashboard",
+        });
+        navigate("/organizer-dashboard");
+      } else {
+        toast({
+          title: "Login failed",
+          description: result.error || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
