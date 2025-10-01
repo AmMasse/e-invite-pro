@@ -1,7 +1,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Shield, Upload, Database, BarChart3 } from "lucide-react";
+import { LogOut, Shield, Database, BarChart3 } from "lucide-react";
+import ExcelUpload from "@/components/admin/ExcelUpload";
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -22,22 +23,11 @@ const AdminDashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="border-accent/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="w-5 h-5 text-accent" />
-                Excel Guest Upload
-              </CardTitle>
-              <CardDescription>Process guest lists from Excel</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Upload Excel files to process guest lists and generate unique invitation links.
-              </p>
-            </CardContent>
-          </Card>
+        <div className="mb-8">
+          <ExcelUpload />
+        </div>
 
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="border-accent/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -67,23 +57,18 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
-        </div>
 
-        <div className="mt-8">
           <Card className="border-accent/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-accent" />
-                Master Admin Access
+                System Status
               </CardTitle>
-              <CardDescription>
-                Phase 1 Complete: Admin authentication and dashboard structure ready
-              </CardDescription>
+              <CardDescription>Phase 2A in progress</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                Key Change: Excel guest upload and link generation functionality has been moved to the admin panel.
-                Phase 2 will implement the Excel processing features here in the admin dashboard.
+              <p className="text-sm text-muted-foreground">
+                Excel upload and parsing functionality is now live. Next: Link generation and guest page.
               </p>
             </CardContent>
           </Card>
