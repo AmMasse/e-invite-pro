@@ -10,6 +10,7 @@ import OrganizerLogin from "./pages/OrganizerLogin";
 import AdminLogin from "./pages/AdminLogin";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import GuestInvitation from "./pages/GuestInvitation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/invite/:uniqueId" element={<GuestInvitation />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

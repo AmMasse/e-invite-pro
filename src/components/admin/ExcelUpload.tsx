@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import * as XLSX from 'xlsx';
 
 interface GuestData {
@@ -14,6 +16,7 @@ interface GuestData {
   rowNumber: number;
   isValid: boolean;
   errors: string[];
+  uniqueLink?: string;
 }
 
 interface ExcelUploadProps {
@@ -25,7 +28,10 @@ const ExcelUpload = ({ eventId, onDataParsed }: ExcelUploadProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [parsedData, setParsedData] = useState<GuestData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isInserting, setIsInserting] = useState(false);
   const [error, setError] = useState<string>("");
+  const [insertedCount, setInsertedCount] = useState(0);
+  const { toast } = useToast();
 
   const validateGuestData = (row: any, rowNumber: number): GuestData => {
     const errors: string[] = [];
@@ -132,8 +138,128 @@ const ExcelUpload = ({ eventId, onDataParsed }: ExcelUploadProps) => {
     }
   };
 
+  const generateUniqueLink = (): string => {
+    // Generate cryptographically secure unique ID
+    return crypto.randomUUID();
+  };
+
+  const handleGenerateLinks = () => {
+    const updatedData = parsedData.map(guest => ({
+      ...guest,
+      uniqueLink: guest.isValid && !guest.uniqueLink ? generateUniqueLink() : guest.uniqueLink
+    }));
+    setParsedData(updatedData);
+    
+    toast({
+      title: "Links Generated",
+      description: `Generated ${updatedData.filter(g => g.uniqueLink).length} unique invitation links`,
+    });
+  };
+
+  const handleBulkInsert = async () => {
+    if (!eventId) {
+      toast({
+        title: "Error",
+        description: "No event selected. Please select an event first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const validGuestsWithLinks = parsedData.filter(g => g.isValid && g.uniqueLink);
+    
+    if (validGuestsWithLinks.length === 0) {
+      toast({
+        title: "Error",
+        description: "No valid guests with links to insert",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsInserting(true);
+    
+    try {
+      const guestsToInsert = validGuestsWithLinks.map(guest => ({
+        event_id: eventId,
+        name: guest.name,
+        email: guest.email || null,
+        phone: guest.phone || null,
+        unique_link: guest.uniqueLink,
+        rsvp_status: 'pending'
+      }));
+
+      const { data, error } = await supabase
+        .from('guests')
+        .insert(guestsToInsert)
+        .select();
+
+      if (error) throw error;
+
+      setInsertedCount(data?.length || 0);
+      
+      toast({
+        title: "Success!",
+        description: `Successfully inserted ${data?.length} guests into the database`,
+      });
+    } catch (err) {
+      console.error("Error inserting guests:", err);
+      toast({
+        title: "Error",
+        description: "Failed to insert guests. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsInserting(false);
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    const validGuestsWithLinks = parsedData.filter(g => g.isValid && g.uniqueLink);
+    
+    if (validGuestsWithLinks.length === 0) {
+      toast({
+        title: "Error",
+        description: "No valid guests with links to download",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Create base URL for invitation links
+    const baseUrl = window.location.origin;
+    
+    const exportData = validGuestsWithLinks.map(guest => ({
+      Name: guest.name,
+      Email: guest.email || '',
+      Phone: guest.phone || '',
+      'Invitation Link': `${baseUrl}/invite/${guest.uniqueLink}`
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Guest Links');
+
+    // Auto-size columns
+    const maxWidth = exportData.reduce((w, r) => Math.max(w, r['Invitation Link'].length), 10);
+    worksheet['!cols'] = [
+      { wch: 20 },
+      { wch: 25 },
+      { wch: 15 },
+      { wch: maxWidth }
+    ];
+
+    XLSX.writeFile(workbook, `guest-invitation-links-${Date.now()}.xlsx`);
+    
+    toast({
+      title: "Downloaded!",
+      description: `Excel file with ${validGuestsWithLinks.length} guest invitation links`,
+    });
+  };
+
   const validGuests = parsedData.filter(g => g.isValid);
   const invalidGuests = parsedData.filter(g => !g.isValid);
+  const guestsWithLinks = parsedData.filter(g => g.uniqueLink);
 
   return (
     <div className="space-y-6">
@@ -183,12 +309,59 @@ const ExcelUpload = ({ eventId, onDataParsed }: ExcelUploadProps) => {
           )}
 
           {parsedData.length > 0 && (
-            <Alert>
-              <CheckCircle2 className="h-4 w-4" />
-              <AlertDescription>
-                Found {parsedData.length} guests: {validGuests.length} valid, {invalidGuests.length} with errors
-              </AlertDescription>
-            </Alert>
+            <div className="space-y-3">
+              <Alert>
+                <CheckCircle2 className="h-4 w-4" />
+                <AlertDescription>
+                  Found {parsedData.length} guests: {validGuests.length} valid, {invalidGuests.length} with errors
+                  {guestsWithLinks.length > 0 && ` • ${guestsWithLinks.length} with links generated`}
+                  {insertedCount > 0 && ` • ${insertedCount} inserted to database`}
+                </AlertDescription>
+              </Alert>
+
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  onClick={handleGenerateLinks}
+                  disabled={validGuests.length === 0 || isProcessing}
+                  className="gap-2"
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  Generate Invitation Links
+                </Button>
+
+                {eventId && guestsWithLinks.length > 0 && (
+                  <Button 
+                    onClick={handleBulkInsert}
+                    disabled={isInserting}
+                    variant="secondary"
+                    className="gap-2"
+                  >
+                    {isInserting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Inserting...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4" />
+                        Insert to Database
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {guestsWithLinks.length > 0 && (
+                  <Button 
+                    onClick={handleDownloadExcel}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Excel with Links
+                  </Button>
+                )}
+              </div>
+            </div>
           )}
 
           <div className="bg-muted/30 p-4 rounded-lg">
