@@ -62,7 +62,7 @@ const phases: Phase[] = [
       { id: '3.3', title: 'Add RSVP status tracking and analytics', completed: true },
       { id: '3.4', title: 'Implement guest communication tools', completed: false },
       { id: '3.5', title: 'Create rich text editor for invitation content', completed: true },
-      { id: '3.6', title: 'Add invitation preview functionality', completed: false },
+      { id: '3.6', title: 'Add invitation preview functionality', completed: true },
       { id: '3.7', title: 'Implement message versioning and updates', completed: false },
       { id: '3.8', title: 'Add manual guest management (add/remove)', completed: true }
     ]
