@@ -1,10 +1,21 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Calendar, Users, Mail } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogOut, BarChart3, Users, Mail } from "lucide-react";
+import { EventOverview } from "@/components/organizer/EventOverview";
+import { GuestList } from "@/components/organizer/GuestList";
+import { InvitationEditor } from "@/components/organizer/InvitationEditor";
 
 const OrganizerDashboard = () => {
   const { user, logout } = useAuth();
+
+  if (!user?.eventId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-destructive">Error: No event ID found</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-primary/5">
@@ -22,69 +33,34 @@ const OrganizerDashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Event Overview
-              </CardTitle>
-              <CardDescription>Manage your event details</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                View and edit your event information, dates, and settings.
-              </p>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
+            <TabsTrigger value="overview" className="gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="guests" className="gap-2">
+              <Users className="w-4 h-4" />
+              Guests
+            </TabsTrigger>
+            <TabsTrigger value="invitation" className="gap-2">
+              <Mail className="w-4 h-4" />
+              Invitation
+            </TabsTrigger>
+          </TabsList>
 
-          <Card className="border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" />
-                Guest Management
-              </CardTitle>
-              <CardDescription>Manage your guest list</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                View RSVPs, manage guest information, and track attendance.
-              </p>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-6">
+            <EventOverview eventId={user.eventId} />
+          </TabsContent>
 
-          <Card className="border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-primary" />
-                Invitations
-              </CardTitle>
-              <CardDescription>Customize invitation content</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Create and customize your invitation messages and content.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="guests">
+            <GuestList eventId={user.eventId} />
+          </TabsContent>
 
-        <div className="mt-8">
-          <Card className="border-primary/20">
-            <CardHeader>
-              <CardTitle>Event ID: {user?.eventId}</CardTitle>
-              <CardDescription>
-                This dashboard will be expanded with full functionality in upcoming phases
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Phase 1 Complete: Authentication and basic dashboard structure are now ready.
-                Next phases will add guest management, Excel upload processing, and itinerary features.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="invitation">
+            <InvitationEditor eventId={user.eventId} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
