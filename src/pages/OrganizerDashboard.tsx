@@ -1,10 +1,11 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, BarChart3, Users, Mail } from "lucide-react";
+import { LogOut, ChartBar as BarChart3, Users, Mail, Calendar } from "lucide-react";
 import { EventOverview } from "@/components/organizer/EventOverview";
 import { GuestList } from "@/components/organizer/GuestList";
 import { InvitationEditor } from "@/components/organizer/InvitationEditor";
+import { ItineraryManager } from "@/components/organizer/ItineraryManager";
 
 const OrganizerDashboard = () => {
   const { user, logout } = useAuth();
@@ -34,7 +35,7 @@ const OrganizerDashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="overview" className="gap-2">
               <BarChart3 className="w-4 h-4" />
               Overview
@@ -46,6 +47,10 @@ const OrganizerDashboard = () => {
             <TabsTrigger value="invitation" className="gap-2">
               <Mail className="w-4 h-4" />
               Invitation
+            </TabsTrigger>
+            <TabsTrigger value="itinerary" className="gap-2">
+              <Calendar className="w-4 h-4" />
+              Itinerary
             </TabsTrigger>
           </TabsList>
 
@@ -59,6 +64,10 @@ const OrganizerDashboard = () => {
 
           <TabsContent value="invitation">
             <InvitationEditor eventId={user.eventId} />
+          </TabsContent>
+
+          <TabsContent value="itinerary">
+            <ItineraryManager eventId={user.eventId} />
           </TabsContent>
         </Tabs>
       </main>
