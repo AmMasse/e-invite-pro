@@ -173,6 +173,63 @@ export type Database = {
           },
         ]
       }
+      media: {
+        Row: {
+          b2_file_id: string
+          b2_file_url: string
+          event_id: string
+          file_name: string
+          file_size: number
+          guest_id: string | null
+          id: string
+          metadata: Json | null
+          mime_type: string
+          thumbnail_url: string | null
+          uploaded_at: string
+        }
+        Insert: {
+          b2_file_id: string
+          b2_file_url: string
+          event_id: string
+          file_name: string
+          file_size: number
+          guest_id?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type: string
+          thumbnail_url?: string | null
+          uploaded_at?: string
+        }
+        Update: {
+          b2_file_id?: string
+          b2_file_url?: string
+          event_id?: string
+          file_name?: string
+          file_size?: number
+          guest_id?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string
+          thumbnail_url?: string | null
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

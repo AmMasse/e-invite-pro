@@ -4,9 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader as Loader2, Calendar, MapPin, CircleCheck as CheckCircle2, Circle as XCircle, CircleHelp as HelpCircle } from "lucide-react";
+import { Loader as Loader2, Calendar, MapPin, CircleCheck as CheckCircle2, Circle as XCircle, CircleHelp as HelpCircle, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MediaUpload } from "@/components/media/MediaUpload";
+import { MediaGallery } from "@/components/media/MediaGallery";
 
 interface Guest {
   id: string;
@@ -284,6 +287,36 @@ const GuestInvitation = () => {
                   <span>Updating your response...</span>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Event Gallery */}
+          <Card className="border-accent/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Camera className="w-5 h-5" />
+                Event Gallery
+              </CardTitle>
+              <CardDescription>
+                Share your memories from this event
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="gallery" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="gallery">View Gallery</TabsTrigger>
+                  <TabsTrigger value="upload">Upload Media</TabsTrigger>
+                </TabsList>
+                <TabsContent value="gallery" className="mt-6">
+                  <MediaGallery eventId={event.id} />
+                </TabsContent>
+                <TabsContent value="upload" className="mt-6">
+                  <MediaUpload 
+                    eventId={event.id}
+                    guestId={guest.id}
+                  />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>

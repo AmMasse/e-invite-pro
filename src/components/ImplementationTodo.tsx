@@ -86,16 +86,16 @@ const phases: Phase[] = [
     id: 'phase5',
     title: 'Phase 5: Media Gallery (Backblaze Integration) 📸',
     description: 'Shared event photo/video gallery',
-    status: 'pending',
+    status: 'completed',
     items: [
-      { id: '5.1', title: 'Configure Backblaze B2 credentials via Supabase secrets', completed: false },
-      { id: '5.2', title: 'Create Edge Functions for signed upload URLs', completed: false },
-      { id: '5.3', title: 'Implement media metadata processing', completed: false },
-      { id: '5.4', title: 'Create guest photo/video upload interface', completed: false },
-      { id: '5.5', title: 'Add file validation and progress indicators', completed: false },
-      { id: '5.6', title: 'Build responsive media grid gallery', completed: false },
-      { id: '5.7', title: 'Create image/video viewer with navigation', completed: false },
-      { id: '5.8', title: 'Implement performance optimizations and CDN', completed: false }
+      { id: '5.1', title: 'Configure Backblaze B2 credentials via Supabase secrets', completed: true },
+      { id: '5.2', title: 'Create Edge Functions for signed upload URLs', completed: true },
+      { id: '5.3', title: 'Implement media metadata processing', completed: true },
+      { id: '5.4', title: 'Create guest photo/video upload interface', completed: true },
+      { id: '5.5', title: 'Add file validation and progress indicators', completed: true },
+      { id: '5.6', title: 'Build responsive media grid gallery', completed: true },
+      { id: '5.7', title: 'Create image/video viewer with navigation', completed: true },
+      { id: '5.8', title: 'Implement performance optimizations and CDN', completed: true }
     ]
   },
   {
