@@ -1,0 +1,33 @@
+{
+  "name": "E-Invite - Event Management",
+  "short_name": "E-Invite",
+  "description": "Modern event invitation and management platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/placeholder.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "social"],
+  "shortcuts": [
+    {
+      "name": "Organizer Login",
+      "short_name": "Login",
+      "description": "Access organizer dashboard",
+      "url": "/organizer-login",
+      "icons": []
+    }
+  ]
+}
