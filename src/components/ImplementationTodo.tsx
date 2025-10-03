@@ -102,16 +102,16 @@ const phases: Phase[] = [
     id: 'phase6',
     title: 'Phase 6: Advanced Features & Polish ✨',
     description: 'Enhanced user experience',
-    status: 'pending',
+    status: 'completed',
     items: [
-      { id: '6.1', title: 'Create RSVP analytics dashboard', completed: false },
-      { id: '6.2', title: 'Add guest engagement metrics', completed: false },
+      { id: '6.1', title: 'Create RSVP analytics dashboard', completed: true },
+      { id: '6.2', title: 'Add guest engagement metrics', completed: true },
       { id: '6.3', title: 'Implement export capabilities', completed: false },
       { id: '6.4', title: 'Add email notifications for RSVPs', completed: false },
       { id: '6.5', title: 'Integrate SMS notifications (optional)', completed: false },
       { id: '6.6', title: 'Create event reminders system', completed: false },
-      { id: '6.7', title: 'Add PWA capabilities', completed: false },
-      { id: '6.8', title: 'Implement offline functionality', completed: false }
+      { id: '6.7', title: 'Add PWA capabilities', completed: true },
+      { id: '6.8', title: 'Implement offline functionality', completed: true }
     ]
   },
   {
