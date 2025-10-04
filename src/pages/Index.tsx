@@ -38,7 +38,7 @@ const Index = () => {
               E-Invite Pro
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Create stunning digital invitations, manage guest lists with Excel, and deliver unforgettable event experiences.
+              Create stunning digital invitations for your guests; create memories that are eternal and deliver unforgettable experiences to your loved ones.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -67,11 +67,11 @@ const Index = () => {
               <Card className="border-primary/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
                 <CardHeader className="text-center">
                   <Upload className="w-10 h-10 mx-auto mb-4 text-primary" />
-                  <CardTitle className="text-lg">Excel Integration</CardTitle>
+                  <CardTitle className="text-lg">Instant Share</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    Upload guest lists via Excel and automatically generate unique invitation links
+                    Share your e-invite instantly via WhatsApp, SMS, email, or social media. Each of your guests gets an intimate and unique personalised access to your event. 
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -83,7 +83,7 @@ const Index = () => {
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    Track RSVPs in real-time and manage guest communications effortlessly
+                    Track RSVPs in real-time for easy planning and organisation
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -95,7 +95,7 @@ const Index = () => {
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    Create detailed schedules with locations and share interactive itineraries
+                    Create detailed schedules with locations and share interactive itineraries so your guests are uptodate with any and all changes
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -107,7 +107,7 @@ const Index = () => {
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    Beautiful mobile-first design ensures perfect viewing on any device
+                    Beautiful mobile-first design ensures perfect viewing on any device, anywhere and at anytime. You dont have to worry about you e-invites getting lost.
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -119,7 +119,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border mt-20 py-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>© 2024 E-Invite Pro. Crafting memorable digital experiences.</p>
+          <p>© 2025 E-Invite Pro. Crafting memorable digital experiences.</p>
         </div>
       </footer>
     </div>
