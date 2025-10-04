@@ -132,16 +132,7 @@ const Index = () => {
             <p className="text-white/80 text-lg mb-8">
               Join hundreds of adventurers creating unforgettable digital experiences
             </p>
-            <Button 
-              asChild 
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-            >
-              <Link to="/organizer-login">
-                <Sparkles className="w-5 h-5 mr-2" />
-                Get Started Now
-              </Link>
-            </Button>
+            
           </GlassCard>
         </div>
       </div>
