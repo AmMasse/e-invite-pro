@@ -1,4 +1,4 @@
-const CACHE_NAME = 'e-invite-v1';
+const CACHE_NAME = 'e-invite-v1-' + new Date().getTime(); // unique version each time
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,9 +9,7 @@ const urlsToCache = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
+      .then((cache) => cache.addAll(urlsToCache))
   );
   self.skipWaiting();
 });
@@ -34,6 +32,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  // Bypass cache for API requests
   if (event.request.url.includes('/api/') ||
       event.request.url.includes('supabase')) {
     event.respondWith(
@@ -50,32 +49,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-first strategy (preferred for dev)
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request).then((response) => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
-        }).catch(() => {
-          return new Response('Offline', {
+        // Cache the new response
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // If offline, fall back to cache
+        return caches.match(event.request).then((response) => {
+          return response || new Response('Offline', {
             status: 503,
             statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain'
-            })
+            headers: { 'Content-Type': 'text/plain' }
           });
         });
       })
