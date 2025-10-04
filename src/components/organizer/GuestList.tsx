@@ -56,6 +56,27 @@ export const GuestList = ({ eventId }: GuestListProps) => {
 
   useEffect(() => {
     fetchGuests();
+
+    // Subscribe to real-time guest updates
+    const channel = supabase
+      .channel(`guests_${eventId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'guests',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
+          fetchGuests();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [eventId]);
 
   useEffect(() => {
