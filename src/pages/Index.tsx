@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
 import { Calendar, Users, Upload, Smartphone, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,6 +31,18 @@ const Index = () => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [navigate]);
+
+  const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+    <div className={`glass-card ${className}`}>
+      <div className="glass-filter" />
+      <div className="glass-distortion-overlay" />
+      <div className="glass-overlay" />
+      <div className="glass-specular" />
+      <div className="glass-content">
+        {children}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -67,30 +78,17 @@ const Index = () => {
           </div>
           
           {/* Glass Button */}
-          <div className="relative group">
-            <div className="absolute inset-0 rounded-lg" style={{ backdropFilter: 'blur(4px)', filter: 'url(#glass-distortion) saturate(120%) brightness(1.15)' }} />
-            <div className="absolute inset-0 rounded-lg bg-white/25" />
-            <div className="absolute inset-0 rounded-lg shadow-[inset_1px_1px_1px_rgba(255,255,255,0.75)]" />
-            <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
-              <div 
-                className="absolute inset-0 opacity-50"
-                style={{
-                  background: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 80%)',
-                  backgroundSize: '300% 300%',
-                  animation: 'floatDistort 10s infinite ease-in-out'
-                }}
-              />
-            </div>
+          <GlassCard className="!w-auto !h-auto">
             <Button 
               asChild 
-              className="relative z-10 bg-transparent border-0 text-white hover:bg-white/10 transition-all duration-300"
+              className="bg-transparent border-0 text-white hover:bg-transparent transition-all duration-300"
             >
               <Link to="/organizer-login">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Get Started
               </Link>
             </Button>
-          </div>
+          </GlassCard>
         </div>
       </nav>
 
@@ -98,30 +96,14 @@ const Index = () => {
       <div className="relative z-10 container mx-auto px-4 py-20">
         <div className="text-center max-w-5xl mx-auto">
           {/* Glass Hero Container */}
-          <div className="relative mb-16">
-            <div className="absolute inset-0 rounded-3xl" style={{ backdropFilter: 'blur(4px)', filter: 'url(#glass-distortion) saturate(120%) brightness(1.15)' }} />
-            <div className="absolute inset-0 rounded-3xl bg-white/25" />
-            <div className="absolute inset-0 rounded-3xl shadow-[inset_1px_1px_1px_rgba(255,255,255,0.75)]" />
-            <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
-              <div 
-                className="absolute inset-0"
-                style={{
-                  background: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 80%)',
-                  backgroundSize: '300% 300%',
-                  animation: 'floatDistort 10s infinite ease-in-out',
-                  mixBlendMode: 'overlay'
-                }}
-              />
-            </div>
-            <div className="relative z-10 p-12">
-              <h1 className="text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
-                E-Invite Pro
-              </h1>
-              <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Create stunning digital invitations for your guests; create memories that are eternal and deliver unforgettable experiences to your loved ones.
-              </p>
-            </div>
-          </div>
+          <GlassCard className="!w-full !h-auto mb-16">
+            <h1 className="text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+              E-Invite Pro
+            </h1>
+            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Create stunning digital invitations for your guests; create memories that are eternal and deliver unforgettable experiences to your loved ones.
+            </p>
+          </GlassCard>
 
           {/* Features Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -131,74 +113,36 @@ const Index = () => {
               { icon: Calendar, title: "Event Itinerary", color: "purple", desc: "Create detailed schedules with locations and share interactive itineraries so your guests are uptodate with any and all changes" },
               { icon: Smartphone, title: "Mobile Optimized", color: "blue", desc: "Beautiful mobile-first design ensures perfect viewing on any device, anywhere and at anytime. You dont have to worry about your e-invites getting lost." }
             ].map((feature, idx) => (
-              <div key={idx} className="relative group">
-                <div className="absolute inset-0 rounded-2xl" style={{ backdropFilter: 'blur(4px)', filter: 'url(#glass-distortion) saturate(120%) brightness(1.15)' }} />
-                <div className="absolute inset-0 rounded-2xl bg-white/25 group-hover:bg-white/30 transition-all duration-300" />
-                <div className="absolute inset-0 rounded-2xl shadow-[inset_1px_1px_1px_rgba(255,255,255,0.75)]" />
-                <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-                  <div 
-                    className="absolute inset-0"
-                    style={{
-                      background: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 80%)',
-                      backgroundSize: '300% 300%',
-                      animation: 'floatDistort 10s infinite ease-in-out',
-                      mixBlendMode: 'overlay'
-                    }}
-                  />
+              <GlassCard key={idx} className="!w-full !h-auto hover-lift">
+                <div className="mb-4 relative">
+                  <div className={`absolute inset-0 ${feature.color === 'purple' ? 'bg-purple-500/20' : 'bg-blue-500/20'} blur-xl rounded-full transition-all`} />
+                  <feature.icon className={`w-10 h-10 mx-auto ${feature.color === 'purple' ? 'text-purple-300' : 'text-blue-300'} relative z-10`} />
                 </div>
-                <Card className="relative z-10 bg-transparent border-0 shadow-none group-hover:scale-105 transition-all duration-300">
-                  <CardHeader className="text-center">
-                    <div className="mb-4 relative">
-                      <div className={`absolute inset-0 bg-${feature.color}-500/20 blur-xl rounded-full group-hover:bg-${feature.color}-500/30 transition-all`} />
-                      <feature.icon className={`w-10 h-10 mx-auto text-${feature.color}-300 relative z-10`} />
-                    </div>
-                    <CardTitle className="text-lg text-white">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-white/80">
-                      {feature.desc}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </div>
+                <h3 className="text-lg font-semibold text-white mb-3">{feature.title}</h3>
+                <p className="text-white/80 text-sm leading-relaxed">{feature.desc}</p>
+              </GlassCard>
             ))}
           </div>
 
           {/* CTA Section */}
-          <div className="mt-20 relative">
-            <div className="absolute inset-0 rounded-3xl" style={{ backdropFilter: 'blur(4px)', filter: 'url(#glass-distortion) saturate(120%) brightness(1.15)' }} />
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 to-blue-500/20" />
-            <div className="absolute inset-0 rounded-3xl shadow-[inset_1px_1px_1px_rgba(255,255,255,0.75)]" />
-            <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
-              <div 
-                className="absolute inset-0"
-                style={{
-                  background: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 80%)',
-                  backgroundSize: '300% 300%',
-                  animation: 'floatDistort 10s infinite ease-in-out',
-                  mixBlendMode: 'overlay'
-                }}
-              />
-            </div>
-            <div className="relative z-10 p-12">
-              <h2 className="text-4xl font-bold text-white mb-4">
-                Ready to Create Something Beautiful?
-              </h2>
-              <p className="text-white/80 text-lg mb-8">
-                Join hundreds of adventurers like you creating unforgettable digital experiences
-              </p>
-              <Button 
-                asChild 
-                size="lg"
-                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-              >
-                <Link to="/organizer-login">
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Get Started Now
-                </Link>
-              </Button>
-            </div>
-          </div>
+          <GlassCard className="!w-full !h-auto mt-20">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Ready to Create Something Beautiful?
+            </h2>
+            <p className="text-white/80 text-lg mb-8">
+              Join hundreds of adventurers creating unforgettable digital experiences
+            </p>
+            <Button 
+              asChild 
+              size="lg"
+              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+            >
+              <Link to="/organizer-login">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Get Started Now
+              </Link>
+            </Button>
+          </GlassCard>
         </div>
       </div>
 
@@ -212,10 +156,86 @@ const Index = () => {
       </footer>
 
       <style jsx>{`
+        .glass-card {
+          position: relative;
+          width: 300px;
+          height: 200px;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-filter,
+        .glass-overlay,
+        .glass-specular {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+        }
+
+        .glass-filter {
+          z-index: 1;
+          backdrop-filter: blur(4px);
+          filter: url(#glass-distortion) saturate(120%) brightness(1.15);
+        }
+
+        .glass-distortion-overlay {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 0%, transparent 80%),
+                      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 80%);
+          background-size: 300% 300%;
+          animation: floatDistort 10s infinite ease-in-out;
+          mix-blend-mode: overlay;
+          z-index: 2;
+          pointer-events: none;
+        }
+
         @keyframes floatDistort {
           0% { background-position: 0% 0%; }
           50% { background-position: 100% 100%; }
           100% { background-position: 0% 0%; }
+        }
+
+        .glass-overlay {
+          z-index: 2;
+          background: rgba(255, 255, 255, 0.25);
+        }
+
+        .glass-specular {
+          z-index: 3;
+          box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.75);
+        }
+
+        .glass-content {
+          position: relative;
+          z-index: 4;
+          padding: 20px;
+          color: #ffffff;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+
+        .hover-lift {
+          transition: transform 0.3s ease;
+        }
+
+        .hover-lift:hover {
+          transform: translateY(-5px);
+        }
+
+        @media (prefers-color-scheme: dark) {
+          .glass-overlay {
+            background: rgba(0, 0, 0, 0.25);
+          }
+          
+          .glass-specular {
+            box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.15);
+          }
         }
       `}</style>
     </div>
