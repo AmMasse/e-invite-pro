@@ -64,23 +64,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const loginAsAdmin = async (masterId: string, password: string) => {
-    // For now, use hardcoded admin credentials
-    // In production, this should be stored securely in environment variables or database
-    if (masterId === 'MASTER_ADMIN' && password === 'admin123') {
+  const loginAsAdmin = async (username: string, password: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-login', {
+        body: { username, password }
+      });
+
+      if (error || !data?.success) {
+        return { success: false, error: data?.error || 'Invalid username or password' };
+      }
+
       const authUser: AuthUser = {
-        id: 'master_admin',
+        id: data.admin.id,
         type: 'admin',
-        name: 'Master Administrator',
-        masterId
+        name: data.admin.name,
+        masterId: username
       };
 
       setUser(authUser);
       localStorage.setItem('einvite_user', JSON.stringify(authUser));
       return { success: true };
+    } catch (error) {
+      console.error('Admin login error:', error);
+      return { success: false, error: 'Authentication failed' };
     }
-
-    return { success: false, error: 'Invalid Master ID or password' };
   };
 
   const logout = () => {

@@ -127,7 +127,8 @@ const phases: Phase[] = [
       { id: '7.5', title: 'Set up performance monitoring', completed: false },
       { id: '7.6', title: 'Configure custom domain', completed: false },
       { id: '7.7', title: 'Conduct end-to-end testing', completed: true },
-      { id: '7.8', title: 'Perform security audit', completed: true, inProgress: true }
+      { id: '7.8', title: 'Perform security audit', completed: true },
+      { id: '7.9', title: 'Implement secure admin authentication', completed: true }
     ]
   }
 ];

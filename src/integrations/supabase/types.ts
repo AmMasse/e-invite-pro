@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string
+          id: string
+          last_login: string | null
+          name: string
+          password_hash: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_login?: string | null
+          name: string
+          password_hash: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_login?: string | null
+          name?: string
+          password_hash?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string

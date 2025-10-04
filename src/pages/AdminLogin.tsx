@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminLogin = () => {
-  const [masterId, setMasterId] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { loginAsAdmin } = useAuth();
@@ -21,7 +21,7 @@ const AdminLogin = () => {
     setIsLoading(true);
     
     try {
-      const result = await loginAsAdmin(masterId, password);
+      const result = await loginAsAdmin(username, password);
       
       if (result.success) {
         toast({
@@ -58,21 +58,22 @@ const AdminLogin = () => {
             <div>
               <CardTitle className="text-2xl">Master Admin</CardTitle>
               <CardDescription>
-                Enter your Master ID and password for admin access
+                Enter your username and password for admin access
               </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="masterId">Master ID</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="masterId"
+                  id="username"
                   type="text"
-                  placeholder="Enter your Master ID"
-                  value={masterId}
-                  onChange={(e) => setMasterId(e.target.value)}
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
+                  autoComplete="username"
                 />
               </div>
               
@@ -85,6 +86,7 @@ const AdminLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="current-password"
                 />
               </div>
 
