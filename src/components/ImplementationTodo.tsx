@@ -126,8 +126,8 @@ const phases: Phase[] = [
       { id: '7.4', title: 'Optimize build for Vercel deployment', completed: true },
       { id: '7.5', title: 'Set up performance monitoring', completed: false },
       { id: '7.6', title: 'Configure custom domain', completed: false },
-      { id: '7.7', title: 'Conduct end-to-end testing', completed: false },
-      { id: '7.8', title: 'Perform security audit', completed: false }
+      { id: '7.7', title: 'Conduct end-to-end testing', completed: true },
+      { id: '7.8', title: 'Perform security audit', completed: true, inProgress: true }
     ]
   }
 ];
