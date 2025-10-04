@@ -84,7 +84,6 @@ const Index = () => {
               className="bg-transparent border-0 text-white hover:bg-transparent transition-all duration-300"
             >
               <Link to="/organizer-login">
-                <Sparkles className="w-4 h-4 mr-2" />
                 Get Started
               </Link>
             </Button>
