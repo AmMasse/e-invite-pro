@@ -12,7 +12,7 @@ interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
-  loginAsOrganizer: (eventId: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginAsOrganizer: (eventName: string, password: string) => Promise<{ success: boolean; error?: string }>;
   loginAsAdmin: (masterId: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
@@ -36,17 +36,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const loginAsOrganizer = async (eventId: string, password: string) => {
+  const loginAsOrganizer = async (eventName: string, password: string) => {
     try {
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .eq('id', eventId)
+        .eq('name', eventName)
         .eq('password', password)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
-        return { success: false, error: 'Invalid Event ID or password' };
+        return { success: false, error: 'Invalid Event Name or password' };
       }
 
       const authUser: AuthUser = {

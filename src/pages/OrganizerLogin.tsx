@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 const OrganizerLogin = () => {
-  const [eventId, setEventId] = useState("");
+  const [eventName, setEventName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { loginAsOrganizer } = useAuth();
@@ -21,7 +21,7 @@ const OrganizerLogin = () => {
     setIsLoading(true);
     
     try {
-      const result = await loginAsOrganizer(eventId, password);
+      const result = await loginAsOrganizer(eventName, password);
       
       if (result.success) {
         toast({
@@ -58,20 +58,20 @@ const OrganizerLogin = () => {
             <div>
               <CardTitle className="text-2xl">Organizer Login</CardTitle>
               <CardDescription>
-                Enter your Event ID and password to access your dashboard
+                Enter your Event Name and password to access your dashboard
               </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="eventId">Event ID</Label>
+                <Label htmlFor="eventName">Event Name</Label>
                 <Input
-                  id="eventId"
+                  id="eventName"
                   type="text"
-                  placeholder="Enter your Event ID"
-                  value={eventId}
-                  onChange={(e) => setEventId(e.target.value)}
+                  placeholder="Enter your Event Name"
+                  value={eventName}
+                  onChange={(e) => setEventName(e.target.value)}
                   required
                 />
               </div>
