@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, MapPin, CheckCircle2, XCircle, HelpCircle, Camera, Clock } from "lucide-react";
+import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -133,30 +133,26 @@ const GuestInvitation = () => {
   const getRSVPBadge = (status: string) => {
     switch (status) {
       case 'yes':
-        return <span className="true-glass-badge true-glass-badge-success">Attending</span>;
+        return <Badge className="true-glass-badge true-glass-badge-success">Attending</Badge>;
       case 'no':
-        return <span className="true-glass-badge true-glass-badge-destructive">Not Attending</span>;
+        return <Badge className="true-glass-badge true-glass-badge-destructive">Not Attending</Badge>;
       case 'maybe':
-        return <span className="true-glass-badge true-glass-badge-accent">Maybe</span>;
+        return <Badge className="true-glass-badge true-glass-badge-accent">Maybe</Badge>;
       default:
-        return <span className="true-glass-badge">Pending</span>;
+        return <Badge className="true-glass-badge">Pending</Badge>;
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        {/* Background Image */}
+      <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/public/background/image.jpg)' }}
-        >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        </div>
-        
+          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(/background/image.jpg)' }}
+        />
         <div className="relative z-10 text-center">
-          <Loader2 className="w-16 h-16 animate-spin text-white mx-auto mb-6" />
-          <p className="text-white text-lg glass-text-shadow">Loading your invitation...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white glass-text-shadow">Loading your invitation...</p>
         </div>
       </div>
     );
@@ -164,17 +160,22 @@ const GuestInvitation = () => {
 
   if (error || !guest || !event) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-        {/* Background Image */}
+      <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center p-4">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url(/background/image.jpg)' }}
+        />
+        <div 
+          className="relative z-10 max-w-md w-full rounded-2xl p-6"
+          style={{
+            background: 'rgba(255, 249, 249, 0.03)',
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'blur(1.9px)',
+            WebkitBackdropFilter: 'blur(1.9px)',
+            border: '1px solid rgba(255, 249, 249, 0.55)',
+          }}
         >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        </div>
-
-        <div className="relative z-10 max-w-md w-full true-glass-card p-8">
-          <h2 className="text-2xl font-bold text-white mb-4 glass-text-shadow">Invitation Not Found</h2>
+          <h2 className="text-2xl font-bold text-red-400 mb-2 glass-text-shadow">Invitation Not Found</h2>
           <p className="text-white/80 glass-text-shadow">
             {error || "This invitation link is invalid or has expired."}
           </p>
@@ -183,191 +184,128 @@ const GuestInvitation = () => {
     );
   }
 
+  const glassCardStyle = {
+    background: 'rgba(255, 249, 249, 0.03)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(1.9px)',
+    WebkitBackdropFilter: 'blur(1.9px)',
+    border: '1px solid rgba(255, 249, 249, 0.55)',
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image - EASY TO CHANGE: Just replace /background/image.jpg */}
+    <div className="min-h-screen relative overflow-x-hidden">
+      {/* Background Image - CHANGE THIS PATH TO UPDATE BACKGROUND */}
       <div 
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: 'url(/background/image.jpg)' }}
-      >
-        <div className="absolute inset-0 bg-black/40"></div>
-      </div>
-
+      />
+      
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-8 sm:py-12 lg:py-16">
-        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+      <div className="relative z-10 container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto space-y-6">
           
-          {/* EVENT DETAILS - Hero Card */}
-          <div className="true-glass-hero p-6 sm:p-10 lg:p-12 true-glass-content">
-            <div className="text-center space-y-4 sm:space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white glass-text-shadow leading-tight">
-                {event.name}
-              </h1>
-              
-              {event.description && (
-                <p className="text-lg sm:text-xl text-white/90 glass-text-shadow max-w-2xl mx-auto leading-relaxed">
-                  {event.description}
-                </p>
-              )}
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 pt-4">
-                {event.event_date && (
-                  <div className="flex items-center gap-3 text-white">
-                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 glass-icon-glow" />
-                    <span className="text-base sm:text-lg font-medium glass-text-shadow">
-                      {new Date(event.event_date).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                )}
-                
-                {event.event_date && (
-                  <div className="flex items-center gap-3 text-white">
-                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 glass-icon-glow" />
-                    <span className="text-base sm:text-lg font-medium glass-text-shadow">
-                      {new Date(event.event_date).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                      })}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-2">
-                <p className="text-white/70 text-sm sm:text-base glass-text-shadow">
-                  Hosted by <span className="font-semibold text-white">{event.organizer_name}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* GUEST INFO - Compact Card */}
-          <div className="true-glass-card p-5 sm:p-6 true-glass-content">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white glass-text-shadow mb-2">
-                  Hello, {guest.name}! 👋
-                </h2>
-                <p className="text-white/70 glass-text-shadow text-sm sm:text-base">
-                  Your personal invitation
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-white/70 glass-text-shadow">Status:</span>
-                {getRSVPBadge(guest.rsvp_status)}
-              </div>
-            </div>
-          </div>
-
-          {/* CUSTOM MESSAGE - If exists */}
-          {invitation?.custom_message && (
-            <div className="true-glass-card p-6 sm:p-8 true-glass-content">
-              <h3 className="text-xl sm:text-2xl font-bold text-white glass-text-shadow mb-4">
-                A Personal Message
-              </h3>
-              <p className="text-white/90 glass-text-shadow italic text-base sm:text-lg leading-relaxed">
-                "{invitation.custom_message}"
-              </p>
-            </div>
-          )}
-
-          {/* RSVP BUTTONS - Prominent Card */}
-          <div className="true-glass-card p-6 sm:p-8 true-glass-content">
-            <h3 className="text-xl sm:text-2xl font-bold text-white glass-text-shadow mb-3 text-center">
-              Will You Join Us?
-            </h3>
-            <p className="text-white/70 glass-text-shadow text-center mb-6 text-sm sm:text-base">
-              Please let us know if you can make it
-            </p>
-            
-            <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto">
-              <button
-                onClick={() => handleRSVP('yes')}
-                disabled={updating || guest.rsvp_status === 'yes'}
-                className={`true-glass-button py-4 sm:py-6 px-3 sm:px-6 rounded-2xl transition-all flex flex-col items-center justify-center gap-2 sm:gap-3 ${
-                  guest.rsvp_status === 'yes' ? 'true-glass-button-active' : ''
-                }`}
-              >
-                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-white glass-icon-glow" />
-                <span className="text-white font-bold text-sm sm:text-base glass-text-shadow">Yes</span>
-              </button>
-              
-              <button
-                onClick={() => handleRSVP('maybe')}
-                disabled={updating || guest.rsvp_status === 'maybe'}
-                className={`true-glass-button py-4 sm:py-6 px-3 sm:px-6 rounded-2xl transition-all flex flex-col items-center justify-center gap-2 sm:gap-3 ${
-                  guest.rsvp_status === 'maybe' ? 'true-glass-button-active' : ''
-                }`}
-              >
-                <HelpCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white glass-icon-glow" />
-                <span className="text-white font-bold text-sm sm:text-base glass-text-shadow">Maybe</span>
-              </button>
-              
-              <button
-                onClick={() => handleRSVP('no')}
-                disabled={updating || guest.rsvp_status === 'no'}
-                className={`true-glass-button py-4 sm:py-6 px-3 sm:px-6 rounded-2xl transition-all flex flex-col items-center justify-center gap-2 sm:gap-3 ${
-                  guest.rsvp_status === 'no' ? 'true-glass-button-active' : ''
-                }`}
-              >
-                <XCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white glass-icon-glow" />
-                <span className="text-white font-bold text-sm sm:text-base glass-text-shadow">No</span>
-              </button>
-            </div>
-            
-            {updating && (
-              <div className="flex items-center justify-center gap-2 mt-6 text-white/80">
-                <Loader2 className="w-5 h-5 animate-spin glass-icon-glow" />
-                <span className="glass-text-shadow text-sm sm:text-base">Updating your response...</span>
+          {/* Event Details - TOP */}
+          <div className="rounded-2xl p-8 glass-text-shadow" style={glassCardStyle}>
+            <h2 className="text-3xl font-bold mb-4 text-white">{event.name}</h2>
+            {event.description && (
+              <p className="text-white/90 mb-6">{event.description}</p>
+            )}
+            {event.event_date && (
+              <div className="flex items-center gap-2 text-white/90">
+                <Calendar className="w-5 h-5 text-amber-400 glass-icon-glow" />
+                <span className="text-lg">{new Date(event.event_date).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</span>
               </div>
             )}
           </div>
 
-          {/* EVENT SCHEDULE */}
-          <div className="true-glass-card p-6 sm:p-8 true-glass-content">
-            <h3 className="text-xl sm:text-2xl font-bold text-white glass-text-shadow mb-6">
-              Event Schedule
-            </h3>
+          {/* Guest Info */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <h3 className="text-2xl font-bold mb-2 text-white">Hello, {guest.name}! 👋</h3>
+            <p className="text-white/80 mb-4">Your personal invitation to {event.name}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/70">Current RSVP Status:</span>
+              {getRSVPBadge(guest.rsvp_status)}
+            </div>
+          </div>
+
+          {/* Custom Message */}
+          {invitation?.custom_message && (
+            <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+              <h3 className="text-xl font-bold mb-3 text-white">Personal Message</h3>
+              <p className="text-white/90 italic">{invitation.custom_message}</p>
+            </div>
+          )}
+
+          {/* RSVP Buttons */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <h3 className="text-xl font-bold mb-2 text-white">Please Respond</h3>
+            <p className="text-white/70 mb-4 text-sm">Let us know if you can make it</p>
+            <div className="grid grid-cols-3 gap-3">
+              <Button
+                onClick={() => handleRSVP('yes')}
+                disabled={updating || guest.rsvp_status === 'yes'}
+                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                variant="outline"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Yes
+              </Button>
+              
+              <Button
+                onClick={() => handleRSVP('maybe')}
+                disabled={updating || guest.rsvp_status === 'maybe'}
+                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                variant="outline"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Maybe
+              </Button>
+              
+              <Button
+                onClick={() => handleRSVP('no')}
+                disabled={updating || guest.rsvp_status === 'no'}
+                className={`gap-2 ${guest.rsvp_status === 'no' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                variant="outline"
+              >
+                <XCircle className="w-4 h-4" />
+                No
+              </Button>
+            </div>
+            
+            {updating && (
+              <div className="flex items-center justify-center gap-2 mt-4 text-sm text-white/70">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Updating your response...</span>
+              </div>
+            )}
+          </div>
+
+          {/* Event Schedule */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
             <ItineraryTimeline eventId={guest.event_id} readonly={true} />
           </div>
 
-          {/* GALLERY - Large Card */}
-          <div className="true-glass-card p-6 sm:p-8 true-glass-content">
-            <div className="flex items-center gap-3 mb-6">
-              <Camera className="w-6 h-6 text-white glass-icon-glow" />
-              <h3 className="text-xl sm:text-2xl font-bold text-white glass-text-shadow">
-                Event Gallery
-              </h3>
+          {/* Gallery */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <div className="flex items-center gap-2 mb-2">
+              <Camera className="w-5 h-5 text-purple-400 glass-icon-glow" />
+              <h3 className="text-xl font-bold text-white">Event Gallery</h3>
             </div>
-            <p className="text-white/70 glass-text-shadow mb-6 text-sm sm:text-base">
-              View photos and share your own memories
-            </p>
-            
+            <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
             <Tabs defaultValue="gallery" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 true-glass-card p-1 mb-6">
-                <TabsTrigger 
-                  value="gallery"
-                  className="text-white data-[state=active]:true-glass-button-active data-[state=active]:font-bold"
-                >
-                  View Gallery
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="upload"
-                  className="text-white data-[state=active]:true-glass-button-active data-[state=active]:font-bold"
-                >
-                  Upload Media
-                </TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
+                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10">View Gallery</TabsTrigger>
+                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10">Upload Media</TabsTrigger>
               </TabsList>
-              <TabsContent value="gallery" className="mt-0">
+              <TabsContent value="gallery" className="mt-6">
                 <MediaGallery eventId={event.id} />
               </TabsContent>
-              <TabsContent value="upload" className="mt-0">
+              <TabsContent value="upload" className="mt-6">
                 <MediaUpload 
                   eventId={event.id}
                   guestId={guest.id}
@@ -376,20 +314,12 @@ const GuestInvitation = () => {
             </Tabs>
           </div>
 
-          {/* FOOTER - "You're Invited" */}
-          <div className="true-glass-card p-8 sm:p-12 true-glass-content">
-            <div className="text-center space-y-3">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white glass-text-shadow">
-                You're Invited
-              </h2>
-              <p className="text-white/70 glass-text-shadow text-sm sm:text-base">
-                We can't wait to celebrate with you
-              </p>
-            </div>
+          {/* Footer - "You're Invited" */}
+          <div className="rounded-2xl p-8 text-center glass-text-shadow" style={glassCardStyle}>
+            <h1 className="text-4xl font-bold mb-2 text-white">You're Invited!</h1>
+            <p className="text-white/80">From {event.organizer_name}</p>
           </div>
 
-          {/* Bottom Spacing */}
-          <div className="h-8"></div>
         </div>
       </div>
     </div>
