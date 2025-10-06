@@ -61,47 +61,16 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
       let completedFiles = 0;
 
       for (const file of selectedFiles) {
-        const fileName = `${Date.now()}-${file.name}`;
-        
-        // Get upload URL from edge function
-        const { data: uploadData, error: urlError } = await supabase.functions.invoke('get-upload-url', {
-          body: { fileName, contentType: file.type }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('eventId', eventId);
+        if (guestId) formData.append('guestId', guestId);
+
+        const { data, error } = await supabase.functions.invoke('upload-media', {
+          body: formData
         });
 
-        if (urlError) throw urlError;
-
-        // Upload to B2
-        const uploadResponse = await fetch(uploadData.uploadUrl, {
-          method: 'POST',
-          headers: {
-            'Authorization': uploadData.authorizationToken,
-            'X-Bz-File-Name': fileName,
-            'Content-Type': file.type,
-            'X-Bz-Content-Sha1': 'do_not_verify'
-          },
-          body: file
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload file to B2');
-        }
-
-        const b2Response = await uploadResponse.json();
-
-        // Save metadata
-        const { error: metadataError } = await supabase.functions.invoke('complete-upload', {
-          body: {
-            eventId,
-            guestId,
-            fileName,
-            fileSize: file.size,
-            mimeType: file.type,
-            b2FileId: b2Response.fileId,
-            b2FileUrl: uploadData.b2FileUrl
-          }
-        });
-
-        if (metadataError) throw metadataError;
+        if (error) throw error;
 
         completedFiles++;
         setProgress((completedFiles / totalFiles) * 100);
