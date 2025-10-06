@@ -377,3 +377,197 @@ All colors MUST be HSL for proper theming.
     background: rgba(255, 255, 255, 0.25) !important;
   }
 }
+
+/* Add this to your index.css file after the previous glass styles */
+
+/* TRUE TRANSPARENT GLASS - For Guest Invitation Page */
+@layer components {
+  /* Base True Glass Card */
+  .true-glass-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    isolation: isolate;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* Hero Glass Card - For main event details */
+  .true-glass-hero {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 0 0 1px rgba(139, 92, 246, 0.1);
+  }
+
+  /* Shimmer overlay for glass cards */
+  .true-glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Inner glow effect */
+  .true-glass-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Content inside glass */
+  .true-glass-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Hover effects for interactive glass */
+  .true-glass-interactive {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .true-glass-interactive:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 0 0 1px rgba(139, 92, 246, 0.2);
+  }
+
+  /* RSVP Button Glass */
+  .true-glass-button {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .true-glass-button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .true-glass-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Active/Selected button state */
+  .true-glass-button-active {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+  }
+
+  /* Badge glass effect */
+  .true-glass-badge {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* Success badge */
+  .true-glass-badge-success {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: rgb(134, 239, 172);
+  }
+
+  /* Warning badge */
+  .true-glass-badge-warning {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: rgb(253, 224, 71);
+  }
+
+  /* Destructive badge */
+  .true-glass-badge-destructive {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: rgb(252, 165, 165);
+  }
+
+  /* Accent badge */
+  .true-glass-badge-accent {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: rgb(253, 224, 71);
+  }
+
+  /* Mobile optimizations for true glass */
+  @media (max-width: 768px) {
+    .true-glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .true-glass-hero {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(20px) saturate(200%);
+      -webkit-backdrop-filter: blur(20px) saturate(200%);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 640px) {
+    .true-glass-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid rgba(255, 255, 255, 0.18);
+    }
+  }
+
+  /* Fallback for browsers without backdrop-filter */
+  @supports not (backdrop-filter: blur(1px)) {
+    .true-glass-card {
+      background: rgba(0, 0, 0, 0.7) !important;
+    }
+    .true-glass-hero {
+      background: rgba(0, 0, 0, 0.75) !important;
+    }
+  }
+
+  /* Text shadows for better readability on glass */
+  .glass-text-shadow {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Icon glow on glass */
+  .glass-icon-glow {
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
