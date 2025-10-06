@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Users, Upload, Smartphone, Sparkles } from "lucide-react";
+import { Calendar, Users, Upload, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Index = () => {
@@ -23,7 +23,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyPress = (e) => {
       if (e.shiftKey && e.key === 'D') {
         navigate('/admin');
       }
@@ -32,8 +32,8 @@ const Index = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [navigate]);
 
-  const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-    <div className={`glass-card ${className}`}>
+  const GlassCard = ({ children, className = "", isHero = false, isButton = false }) => (
+    <div className={`glass-card ${isHero ? 'glass-hero' : ''} ${isButton ? 'glass-button' : ''} ${className}`}>
       <div className="glass-filter" />
       <div className="glass-distortion-overlay" />
       <div className="glass-overlay" />
@@ -78,10 +78,10 @@ const Index = () => {
           </div>
           
           {/* Glass Button */}
-          <GlassCard className="!w-auto !h-auto">
+          <GlassCard isButton className="!w-auto !h-auto">
             <Button 
               asChild 
-              className="bg-transparent border-0 text-white hover:bg-transparent transition-all duration-300"
+              className="bg-transparent border-0 text-white hover:bg-transparent transition-all duration-300 font-medium px-6"
             >
               <Link to="/organizer-login">
                 Get Started
@@ -92,55 +92,74 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative z-10 container mx-auto px-4 py-20">
+      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20">
         <div className="text-center max-w-5xl mx-auto">
           {/* Glass Hero Container */}
-          <GlassCard className="!w-full !h-auto mb-16">
-            <h1 className="text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+          <GlassCard isHero className="!w-full !h-auto mb-12 md:mb-16">
+            <h1 className="text-4xl md:text-7xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
               E-Invite Pro
             </h1>
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-xl text-white/90 mb-6 md:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
               Create stunning digital invitations for your guests; create memories that are eternal and deliver unforgettable experiences to your loved ones.
             </p>
           </GlassCard>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
-              { icon: Upload, title: "Instant Share", color: "purple", desc: "Share your e-invite instantly via WhatsApp, SMS, email, or social media. Each of your guests gets an intimate and unique personalised access to your event." },
-              { icon: Users, title: "Guest Management", color: "blue", desc: "Track RSVPs in real-time for easy planning and organisation" },
-              { icon: Calendar, title: "Event Itinerary", color: "purple", desc: "Create detailed schedules with locations and share interactive itineraries so your guests are uptodate with any and all changes" },
-              { icon: Smartphone, title: "Mobile Optimized", color: "blue", desc: "Beautiful mobile-first design ensures perfect viewing on any device, anywhere and at anytime. You dont have to worry about your e-invites getting lost." }
+              { 
+                icon: Upload, 
+                title: "Instant Share", 
+                color: "purple", 
+                desc: "Share your e-invite instantly via WhatsApp, SMS, email, or social media. Each of your guests gets an intimate and unique personalised access to your event." 
+              },
+              { 
+                icon: Users, 
+                title: "Guest Management", 
+                color: "blue", 
+                desc: "Track RSVPs in real-time for easy planning and organisation" 
+              },
+              { 
+                icon: Calendar, 
+                title: "Event Itinerary", 
+                color: "purple", 
+                desc: "Create detailed schedules with locations and share interactive itineraries so your guests are uptodate with any and all changes" 
+              },
+              { 
+                icon: Smartphone, 
+                title: "Mobile Optimized", 
+                color: "blue", 
+                desc: "Beautiful mobile-first design ensures perfect viewing on any device, anywhere and at anytime. You dont have to worry about your e-invites getting lost." 
+              }
             ].map((feature, idx) => (
               <GlassCard key={idx} className="!w-full !h-auto hover-lift">
                 <div className="mb-4 relative">
-                  <div className={`absolute inset-0 ${feature.color === 'purple' ? 'bg-purple-500/20' : 'bg-blue-500/20'} blur-xl rounded-full transition-all`} />
+                  <div className={`absolute inset-0 ${feature.color === 'purple' ? 'bg-purple-500/20' : 'bg-blue-500/20'} blur-xl rounded-full transition-all feature-icon-glow`} />
                   <feature.icon className={`w-10 h-10 mx-auto ${feature.color === 'purple' ? 'text-purple-300' : 'text-blue-300'} relative z-10`} />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-3">{feature.title}</h3>
+                <h3 className="text-base md:text-lg font-semibold text-white mb-2 md:mb-3">{feature.title}</h3>
                 <p className="text-white/80 text-sm leading-relaxed">{feature.desc}</p>
               </GlassCard>
             ))}
           </div>
 
           {/* CTA Section */}
-          <GlassCard className="!w-full !h-auto mt-20">
-            <h2 className="text-4xl font-bold text-white mb-4">
+          <GlassCard isHero className="!w-full !h-auto mt-12 md:mt-20">
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3 md:mb-4">
               Ready to Create Something Beautiful?
             </h2>
-            <p className="text-white/80 text-lg mb-8">
+            <p className="text-white/80 text-base md:text-lg mb-6 md:mb-8">
               Join hundreds of adventurers creating unforgettable digital experiences
             </p>
-            
           </GlassCard>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 mt-20 py-8">
+      <footer className="relative z-10 mt-12 md:mt-20 py-8">
         <div className="absolute inset-0" style={{ backdropFilter: 'blur(4px)' }} />
         <div className="absolute inset-0 bg-black/30" />
-        <div className="relative container mx-auto px-4 text-center text-white/70">
+        <div className="relative container mx-auto px-4 text-center text-white/70 text-sm md:text-base">
           <p>© 2025 Domus Dei Tech | E-Invite Pro.</p>
         </div>
       </footer>
