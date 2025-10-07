@@ -149,22 +149,11 @@ const GuestInvitation = () => {
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center">
         <div 
           className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/background/image.jpg)' }}
+          style={{ backgroundImage: 'url(/backgrounds/default.jpg)' }}
         />
         <div className="relative z-10 text-center">
-          <div className="relative w-24 h-24 mx-auto mb-6">
-            <Sparkles className="w-24 h-24 text-amber-400 animate-pulse absolute" />
-            <Sparkles className="w-16 h-16 text-purple-400 animate-ping absolute top-4 left-4" />
-            <Calendar className="w-12 h-12 text-white animate-bounce absolute top-6 left-6" />
-          </div>
-          <p className="text-white glass-text-shadow text-xl font-bold animate-pulse">
-            Opening your invitation...
-          </p>
-          <div className="flex justify-center gap-2 mt-4">
-            <div className="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-          </div>
+          <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white glass-text-shadow">Loading your invitation...</p>
         </div>
       </div>
     );
@@ -175,7 +164,7 @@ const GuestInvitation = () => {
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center p-4">
         <div 
           className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/background/image.jpg)' }}
+          style={{ backgroundImage: 'url(/backgrounds/default.jpg)' }}
         />
         <div 
           className="relative z-10 max-w-md w-full rounded-2xl p-6"
@@ -204,12 +193,17 @@ const GuestInvitation = () => {
     border: '1px solid rgba(255, 249, 249, 0.55)',
   };
 
+  // Construct background image URL from event data, with fallback
+  const backgroundImage = event.background_image 
+    ? `/backgrounds/${event.background_image}` 
+    : '/backgrounds/default.jpg';
+
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      {/* Background Image - CHANGE THIS PATH TO UPDATE BACKGROUND */}
+      {/* Background Image - Dynamically loaded from event data */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/background/image.jpg)' }}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
       />
       
       {/* Content */}
