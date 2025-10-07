@@ -135,7 +135,7 @@ serve(async (req) => {
         file_size: file.size,
         mime_type: file.type,
         b2_file_id: b2Response.fileId,
-        b2_file_url: `${b2Endpoint}/file/${b2BucketName}/${fileName}`
+        b2_file_url: `https://${b2Endpoint}/file/${b2BucketName}/${fileName}`
       })
       .select()
       .single();
