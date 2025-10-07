@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,7 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [currentFileName, setCurrentFileName] = useState<string>("");
   const { toast } = useToast();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +51,30 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const simulateProgress = (fileIndex: number, totalFiles: number): Promise<void> => {
+    return new Promise((resolve) => {
+      const startPercent = (fileIndex / totalFiles) * 100;
+      const endPercent = ((fileIndex + 1) / totalFiles) * 100;
+      const duration = 1500; // 1.5 seconds per file
+      const steps = 30;
+      const increment = (endPercent - startPercent) / steps;
+      const stepDuration = duration / steps;
+      
+      let currentStep = 0;
+      
+      const interval = setInterval(() => {
+        currentStep++;
+        const newProgress = startPercent + (increment * currentStep);
+        setProgress(Math.min(newProgress, endPercent - 1)); // Stop just before complete
+        
+        if (currentStep >= steps) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, stepDuration);
+    });
+  };
+
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return;
 
@@ -58,30 +83,43 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
 
     try {
       const totalFiles = selectedFiles.length;
-      let completedFiles = 0;
 
-      for (const file of selectedFiles) {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        setCurrentFileName(file.name);
+
+        // Start simulated progress
+        const progressPromise = simulateProgress(i, totalFiles);
+
+        // Actual upload
         const formData = new FormData();
         formData.append('file', file);
         formData.append('eventId', eventId);
         if (guestId) formData.append('guestId', guestId);
 
-        const { data, error } = await supabase.functions.invoke('upload-media', {
+        const uploadPromise = supabase.functions.invoke('upload-media', {
           body: formData
         });
 
+        // Wait for both progress simulation and upload to complete
+        const [, { data, error }] = await Promise.all([
+          progressPromise,
+          uploadPromise
+        ]);
+
         if (error) throw error;
 
-        completedFiles++;
-        setProgress((completedFiles / totalFiles) * 100);
+        // Complete this file's progress
+        setProgress(((i + 1) / totalFiles) * 100);
       }
 
       toast({
         title: "Upload successful",
-        description: `${completedFiles} file(s) uploaded successfully`
+        description: `${totalFiles} file(s) uploaded successfully`
       });
 
       setSelectedFiles([]);
+      setCurrentFileName("");
       onUploadComplete?.();
 
     } catch (error) {
@@ -99,7 +137,7 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
 
   return (
     <div className="space-y-4">
-      <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center">
+      <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center hover:border-primary/40 transition-colors">
         <input
           type="file"
           id="media-upload"
@@ -111,7 +149,7 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
         />
         <label
           htmlFor="media-upload"
-          className="cursor-pointer flex flex-col items-center gap-2"
+          className={`flex flex-col items-center gap-2 ${uploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
         >
           <Upload className="w-12 h-12 text-primary" />
           <p className="text-lg font-semibold">Upload Photos & Videos</p>
@@ -144,11 +182,22 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
           </div>
 
           {uploading && (
-            <div className="space-y-2">
-              <Progress value={progress} />
-              <p className="text-sm text-center text-muted-foreground">
-                Uploading... {Math.round(progress)}%
-              </p>
+            <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                <p className="text-sm font-medium">Uploading...</p>
+              </div>
+              <Progress value={progress} className="h-2" />
+              <div className="space-y-1">
+                <p className="text-sm text-center text-muted-foreground">
+                  {Math.round(progress)}% Complete
+                </p>
+                {currentFileName && (
+                  <p className="text-xs text-center text-muted-foreground truncate">
+                    Current: {currentFileName}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -156,8 +205,16 @@ export const MediaUpload = ({ eventId, guestId, onUploadComplete }: MediaUploadP
             onClick={uploadFiles}
             disabled={uploading}
             className="w-full"
+            size="lg"
           >
-            {uploading ? "Uploading..." : `Upload ${selectedFiles.length} File(s)`}
+            {uploading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              `Upload ${selectedFiles.length} File(s)`
+            )}
           </Button>
         </div>
       )}
