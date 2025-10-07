@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X } from "lucide-react";
+import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -152,8 +152,19 @@ const GuestInvitation = () => {
           style={{ backgroundImage: 'url(/background/image.jpg)' }}
         />
         <div className="relative z-10 text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
-          <p className="text-white glass-text-shadow">Loading your invitation...</p>
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <Sparkles className="w-24 h-24 text-amber-400 animate-pulse absolute" />
+            <Sparkles className="w-16 h-16 text-purple-400 animate-ping absolute top-4 left-4" />
+            <Calendar className="w-12 h-12 text-white animate-bounce absolute top-6 left-6" />
+          </div>
+          <p className="text-white glass-text-shadow text-xl font-bold animate-pulse">
+            Opening your invitation...
+          </p>
+          <div className="flex justify-center gap-2 mt-4">
+            <div className="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
         </div>
       </div>
     );
@@ -249,7 +260,9 @@ const GuestInvitation = () => {
               <Button
                 onClick={() => handleRSVP('yes')}
                 disabled={updating}
-                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
+                className={`gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 transition-all ${
+                  guest.rsvp_status === 'yes' ? 'border-2 border-green-400 shadow-lg shadow-green-400/50' : 'border border-white/30'
+                }`}
                 variant="outline"
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -259,7 +272,9 @@ const GuestInvitation = () => {
               <Button
                 onClick={() => handleRSVP('maybe')}
                 disabled={updating}
-                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
+                className={`gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 transition-all ${
+                  guest.rsvp_status === 'maybe' ? 'border-2 border-amber-400 shadow-lg shadow-amber-400/50' : 'border border-white/30'
+                }`}
                 variant="outline"
               >
                 <HelpCircle className="w-4 h-4" />
@@ -269,7 +284,9 @@ const GuestInvitation = () => {
               <Button
                 onClick={() => handleRSVP('no')}
                 disabled={updating}
-                className={`gap-2 ${guest.rsvp_status === 'no' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
+                className={`gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 transition-all ${
+                  guest.rsvp_status === 'no' ? 'border-2 border-red-400 shadow-lg shadow-red-400/50' : 'border border-white/30'
+                }`}
                 variant="outline"
               >
                 <XCircle className="w-4 h-4" />
@@ -289,7 +306,7 @@ const GuestInvitation = () => {
           <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
             <Button
               onClick={() => setShowSchedule(true)}
-              className="true-glass-button gap-2"
+              className="gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 border border-white/30 transition-all"
               variant="outline"
             >
               <Calendar className="w-4 h-4" />
@@ -306,8 +323,18 @@ const GuestInvitation = () => {
             <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
             <Tabs defaultValue="gallery" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
-                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10 text-white font-bold">View Gallery</TabsTrigger>
-                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10 text-white font-bold">Upload Media</TabsTrigger>
+                <TabsTrigger 
+                  value="gallery" 
+                  className="text-white font-bold data-[state=active]:bg-white/20 data-[state=active]:border-2 data-[state=active]:border-purple-400"
+                >
+                  View Gallery
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="upload" 
+                  className="text-white font-bold data-[state=active]:bg-white/20 data-[state=active]:border-2 data-[state=active]:border-purple-400"
+                >
+                  Upload Media
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="gallery" className="mt-6">
                 <MediaGallery eventId={event.id} />
@@ -337,13 +364,12 @@ const GuestInvitation = () => {
           onClick={() => setShowSchedule(false)}
         >
           <div 
-            className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-6"
-            style={glassCardStyle}
+            className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-6 bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowSchedule(false)}
-              className="absolute top-4 right-4 text-white hover:text-white/70 transition-colors"
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
