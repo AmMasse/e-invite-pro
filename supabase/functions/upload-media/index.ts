@@ -41,8 +41,9 @@ serve(async (req) => {
     const b2ApplicationKey = Deno.env.get("B2_APPLICATION_KEY");
     const b2BucketName = Deno.env.get("B2_BUCKET_NAME");
     const b2Endpoint = Deno.env.get("B2_ENDPOINT");
+    const b2DownloadUrl = Deno.env.get("B2_DOWNLOAD_URL");
 
-    if (!b2ApplicationKeyId || !b2ApplicationKey || !b2BucketName || !b2Endpoint) {
+    if (!b2ApplicationKeyId || !b2ApplicationKey || !b2BucketName || !b2Endpoint || !b2DownloadUrl) {
       throw new Error("Missing B2 environment variables");
     }
 
@@ -137,8 +138,8 @@ serve(async (req) => {
 
     console.log("Saving metadata to database...");
 
-    // Construct the download URL with proper encoding (add https:// since endpoint doesn't include it)
-    const downloadUrl = `https://${b2Endpoint}/file/${b2BucketName}/${encodeURIComponent(fileName)}`;
+    // Construct the download URL using the public download endpoint
+    const downloadUrl = `https://${b2DownloadUrl}/file/${b2BucketName}/${encodeURIComponent(fileName)}`;
 
     // Save metadata to database
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
