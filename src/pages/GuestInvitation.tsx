@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera } from "lucide-react";
+import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,6 +39,7 @@ const GuestInvitation = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showSchedule, setShowSchedule] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -205,15 +206,15 @@ const GuestInvitation = () => {
         <div className="max-w-3xl mx-auto space-y-6">
           
           {/* Event Details - TOP */}
-          <div className="rounded-2xl p-8 glass-text-shadow" style={glassCardStyle}>
-            <h2 className="text-3xl font-bold mb-4 text-white">{event.name}</h2>
+          <div className="rounded-2xl p-8 glass-text-shadow text-center" style={glassCardStyle}>
+            <h2 className="text-4xl font-bold mb-4 text-white">{event.name}</h2>
             {event.description && (
-              <p className="text-white/90 mb-6">{event.description}</p>
+              <p className="text-white/90 mb-6 text-lg">{event.description}</p>
             )}
             {event.event_date && (
-              <div className="flex items-center gap-2 text-white/90">
+              <div className="flex items-center justify-center gap-2 text-white/90">
                 <Calendar className="w-5 h-5 text-amber-400 glass-icon-glow" />
-                <span className="text-lg">{new Date(event.event_date).toLocaleDateString('en-US', {
+                <span className="text-xl">{new Date(event.event_date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -236,8 +237,7 @@ const GuestInvitation = () => {
           {/* Custom Message */}
           {invitation?.custom_message && (
             <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
-              <h3 className="text-xl font-bold mb-3 text-white">Personal Message</h3>
-              <p className="text-white/90 italic">{invitation.custom_message}</p>
+              <p className="text-white/90 font-bold italic text-lg">{invitation.custom_message}</p>
             </div>
           )}
 
@@ -248,8 +248,8 @@ const GuestInvitation = () => {
             <div className="grid grid-cols-3 gap-3">
               <Button
                 onClick={() => handleRSVP('yes')}
-                disabled={updating || guest.rsvp_status === 'yes'}
-                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -258,8 +258,8 @@ const GuestInvitation = () => {
               
               <Button
                 onClick={() => handleRSVP('maybe')}
-                disabled={updating || guest.rsvp_status === 'maybe'}
-                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <HelpCircle className="w-4 h-4" />
@@ -268,8 +268,8 @@ const GuestInvitation = () => {
               
               <Button
                 onClick={() => handleRSVP('no')}
-                disabled={updating || guest.rsvp_status === 'no'}
-                className={`gap-2 ${guest.rsvp_status === 'no' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'no' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <XCircle className="w-4 h-4" />
@@ -285,9 +285,16 @@ const GuestInvitation = () => {
             )}
           </div>
 
-          {/* Event Schedule */}
-          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
-            <ItineraryTimeline eventId={guest.event_id} readonly={true} />
+          {/* Event Schedule Button */}
+          <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
+            <Button
+              onClick={() => setShowSchedule(true)}
+              className="true-glass-button gap-2"
+              variant="outline"
+            >
+              <Calendar className="w-4 h-4" />
+              Event Schedule
+            </Button>
           </div>
 
           {/* Gallery */}
@@ -299,8 +306,8 @@ const GuestInvitation = () => {
             <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
             <Tabs defaultValue="gallery" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
-                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10">View Gallery</TabsTrigger>
-                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10">Upload Media</TabsTrigger>
+                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10 text-white font-bold">View Gallery</TabsTrigger>
+                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10 text-white font-bold">Upload Media</TabsTrigger>
               </TabsList>
               <TabsContent value="gallery" className="mt-6">
                 <MediaGallery eventId={event.id} />
@@ -322,6 +329,28 @@ const GuestInvitation = () => {
 
         </div>
       </div>
+
+      {/* Schedule Overlay */}
+      {showSchedule && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => setShowSchedule(false)}
+        >
+          <div 
+            className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-6"
+            style={glassCardStyle}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowSchedule(false)}
+              className="absolute top-4 right-4 text-white hover:text-white/70 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <ItineraryTimeline eventId={guest.event_id} readonly={true} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
