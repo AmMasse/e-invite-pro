@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera } from "lucide-react";
+import { Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,11 +25,41 @@ interface Event {
   description?: string;
   event_date?: string;
   organizer_name: string;
+  background_image?: string;
 }
 
 interface Invitation {
   custom_message?: string;
 }
+
+// Custom Loader Component
+const CustomLoader = () => (
+  <div className="flex flex-col items-center justify-center gap-4">
+    <div className="loader" />
+    <p className="text-white glass-text-shadow">Loading your invitation...</p>
+    <style>{`
+      .loader {
+        width: 50px;
+        aspect-ratio: 1;
+        color: #f03355;
+        border: none;
+        --_c: no-repeat radial-gradient(farthest-side, currentColor 92%, #0000);
+        background: 
+          var(--_c) 50% 0    /12px 12px,
+          var(--_c) 50% 100% /12px 12px,
+          var(--_c) 100% 50% /12px 12px,
+          var(--_c) 0    50% /12px 12px,
+          var(--_c) 50%  50% /12px 12px,
+          conic-gradient(from 90deg at 4px 4px, #0000 90deg, currentColor 0)
+            -4px -4px / calc(50% + 2px) calc(50% + 2px);
+        animation: l8 0.3s infinite linear;
+      }
+      @keyframes l8 {
+        to { transform: rotate(1turn); }
+      }
+    `}</style>
+  </div>
+);
 
 const GuestInvitation = () => {
   const { uniqueId } = useParams<{ uniqueId: string }>();
@@ -39,6 +69,7 @@ const GuestInvitation = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showSchedule, setShowSchedule] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -143,16 +174,29 @@ const GuestInvitation = () => {
     }
   };
 
+  const glassCardStyle = {
+    background: 'rgba(255, 249, 249, 0.03)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(1.9px)',
+    WebkitBackdropFilter: 'blur(1.9px)',
+    border: '1px solid rgba(255, 249, 249, 0.55)',
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center">
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/background/image.jpg)' }}
+          className="fixed inset-0 z-0"
+          style={{ 
+            backgroundImage: 'url(/background/default.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed'
+          }}
         />
         <div className="relative z-10 text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
-          <p className="text-white glass-text-shadow">Loading your invitation...</p>
+          <CustomLoader />
         </div>
       </div>
     );
@@ -162,18 +206,18 @@ const GuestInvitation = () => {
     return (
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center p-4">
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/background/default.jpg)' }}
+          className="fixed inset-0 z-0"
+          style={{ 
+            backgroundImage: 'url(/background/default.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed'
+          }}
         />
         <div 
           className="relative z-10 max-w-md w-full rounded-2xl p-6"
-          style={{
-            background: 'rgba(255, 249, 249, 0.03)',
-            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(1.9px)',
-            WebkitBackdropFilter: 'blur(1.9px)',
-            border: '1px solid rgba(255, 249, 249, 0.55)',
-          }}
+          style={glassCardStyle}
         >
           <h2 className="text-2xl font-bold text-red-400 mb-2 glass-text-shadow">Invitation Not Found</h2>
           <p className="text-white/80 glass-text-shadow">
@@ -184,20 +228,23 @@ const GuestInvitation = () => {
     );
   }
 
-  const glassCardStyle = {
-    background: 'rgba(255, 249, 249, 0.03)',
-    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-    backdropFilter: 'blur(1.9px)',
-    WebkitBackdropFilter: 'blur(1.9px)',
-    border: '1px solid rgba(255, 249, 249, 0.55)',
-  };
+  // Determine background image - use event image if available, otherwise default
+  const backgroundImageUrl = event.background_image && event.background_image.trim() !== '' 
+    ? `/background/${event.background_image}` 
+    : '/background/default.jpg';
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      {/* Background Image - CHANGE THIS PATH TO UPDATE BACKGROUND */}
+      {/* Fixed Background Image */}
       <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/background/default.jpg)' }}
+        className="fixed inset-0 z-0"
+        style={{ 
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }}
       />
       
       {/* Content */}
@@ -205,15 +252,15 @@ const GuestInvitation = () => {
         <div className="max-w-3xl mx-auto space-y-6">
           
           {/* Event Details - TOP */}
-          <div className="rounded-2xl p-8 glass-text-shadow" style={glassCardStyle}>
-            <h2 className="text-3xl font-bold mb-4 text-white">{event.name}</h2>
+          <div className="rounded-2xl p-8 glass-text-shadow text-center" style={glassCardStyle}>
+            <h2 className="text-4xl font-bold mb-4 text-white">{event.name}</h2>
             {event.description && (
-              <p className="text-white/90 mb-6">{event.description}</p>
+              <p className="text-white/90 mb-6 text-lg">{event.description}</p>
             )}
             {event.event_date && (
-              <div className="flex items-center gap-2 text-white/90">
+              <div className="flex items-center justify-center gap-2 text-white/90">
                 <Calendar className="w-5 h-5 text-amber-400 glass-icon-glow" />
-                <span className="text-lg">{new Date(event.event_date).toLocaleDateString('en-US', {
+                <span className="text-xl">{new Date(event.event_date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -226,7 +273,7 @@ const GuestInvitation = () => {
           {/* Guest Info */}
           <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
             <h3 className="text-2xl font-bold mb-2 text-white">Hello, {guest.name}! 👋</h3>
-            <p className="text-white/80 mb-4">Your personal invitation to {event.name}</p>
+            <p className="text-white/80 mb-4">We would be honored by your presence and this is your invitation to {event.name}</p>
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/70">Current RSVP Status:</span>
               {getRSVPBadge(guest.rsvp_status)}
@@ -236,8 +283,7 @@ const GuestInvitation = () => {
           {/* Custom Message */}
           {invitation?.custom_message && (
             <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
-              <h3 className="text-xl font-bold mb-3 text-white">Personal Message</h3>
-              <p className="text-white/90 italic">{invitation.custom_message}</p>
+              <p className="text-white/90 font-bold italic text-lg">{invitation.custom_message}</p>
             </div>
           )}
 
@@ -248,8 +294,8 @@ const GuestInvitation = () => {
             <div className="grid grid-cols-3 gap-3">
               <Button
                 onClick={() => handleRSVP('yes')}
-                disabled={updating || guest.rsvp_status === 'yes'}
-                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -258,8 +304,8 @@ const GuestInvitation = () => {
               
               <Button
                 onClick={() => handleRSVP('maybe')}
-                disabled={updating || guest.rsvp_status === 'maybe'}
-                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <HelpCircle className="w-4 h-4" />
@@ -268,8 +314,8 @@ const GuestInvitation = () => {
               
               <Button
                 onClick={() => handleRSVP('no')}
-                disabled={updating || guest.rsvp_status === 'no'}
-                className={`gap-2 ${guest.rsvp_status === 'no' ? 'true-glass-button-active' : 'true-glass-button'}`}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'no' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <XCircle className="w-4 h-4" />
@@ -279,15 +325,21 @@ const GuestInvitation = () => {
             
             {updating && (
               <div className="flex items-center justify-center gap-2 mt-4 text-sm text-white/70">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Updating your response...</span>
+                <CustomLoader />
               </div>
             )}
           </div>
 
-          {/* Event Schedule */}
-          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
-            <ItineraryTimeline eventId={guest.event_id} readonly={true} />
+          {/* Event Schedule Button */}
+          <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
+            <Button
+              onClick={() => setShowSchedule(true)}
+              className="true-glass-button gap-2"
+              variant="outline"
+            >
+              <Calendar className="w-4 h-4" />
+              Event Schedule
+            </Button>
           </div>
 
           {/* Gallery */}
@@ -299,8 +351,8 @@ const GuestInvitation = () => {
             <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
             <Tabs defaultValue="gallery" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
-                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10">View Gallery</TabsTrigger>
-                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10">Upload Media</TabsTrigger>
+                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10 text-white font-bold">View Gallery</TabsTrigger>
+                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10 text-white font-bold">Upload Media</TabsTrigger>
               </TabsList>
               <TabsContent value="gallery" className="mt-6">
                 <MediaGallery eventId={event.id} />
@@ -322,6 +374,25 @@ const GuestInvitation = () => {
 
         </div>
       </div>
+
+      {/* Schedule Overlay - Full Screen Edge to Edge */}
+      {showSchedule && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/80 overflow-y-auto"
+        >
+          <div className="min-h-screen relative py-8 px-4">
+            <button
+              onClick={() => setShowSchedule(false)}
+              className="fixed top-6 right-6 z-10 text-white hover:text-white/70 transition-colors bg-black/50 rounded-full p-2"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="max-w-4xl mx-auto">
+              <ItineraryTimeline eventId={guest.event_id} readonly={true} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
