@@ -42,6 +42,7 @@ const CustomLoader = () => (
         width: 50px;
         aspect-ratio: 1;
         color: #f03355;
+        border: none;
         --_c: no-repeat radial-gradient(farthest-side, currentColor 92%, #0000);
         background: 
           var(--_c) 50% 0    /12px 12px,
@@ -69,7 +70,6 @@ const GuestInvitation = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string>("");
   const [showSchedule, setShowSchedule] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState('/backgrounds/default.jpg');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -81,7 +81,6 @@ const GuestInvitation = () => {
       }
 
       try {
-        // Fetch guest data
         const { data: guestData, error: guestError } = await supabase
           .from('guests')
           .select('*')
@@ -89,7 +88,6 @@ const GuestInvitation = () => {
           .single();
 
         if (guestError || !guestData) {
-          console.error("Guest fetch error:", guestError);
           setError("Invitation not found");
           setLoading(false);
           return;
@@ -97,40 +95,20 @@ const GuestInvitation = () => {
 
         setGuest(guestData);
 
-        // Fetch event data - explicitly select background_image
         const { data: eventData, error: eventError } = await supabase
           .from('events')
-          .select('id, name, description, event_date, organizer_name, background_image')
+          .select('*')
           .eq('id', guestData.event_id)
           .single();
 
         if (eventError || !eventData) {
-          console.error("Event fetch error:", eventError);
           setError("Event not found");
           setLoading(false);
           return;
         }
 
-        console.log("Event data:", eventData); // Debug log
-        console.log("Background image value:", eventData.background_image); // Debug log
-        
         setEvent(eventData);
 
-        // Set background image with fallback
-        if (eventData.background_image) {
-          // Construct the path - adjust this based on your actual storage structure
-          const imagePath = eventData.background_image.startsWith('/') 
-            ? eventData.background_image 
-            : `/backgrounds/${eventData.background_image}`;
-          
-          console.log("Setting background image to:", imagePath); // Debug log
-          setBackgroundImage(imagePath);
-        } else {
-          console.log("No background image found, using default"); // Debug log
-          setBackgroundImage('/backgrounds/default.jpg');
-        }
-
-        // Fetch invitation custom message
         const { data: invitationData } = await supabase
           .from('invitations')
           .select('custom_message')
@@ -201,7 +179,7 @@ const GuestInvitation = () => {
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center">
         <div 
           className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/backgrounds/default.jpg)' }}
+          style={{ backgroundImage: 'url(/background/default.jpg)' }}
         />
         <div className="relative z-10 text-center">
           <CustomLoader />
@@ -215,7 +193,7 @@ const GuestInvitation = () => {
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center p-4">
         <div 
           className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/backgrounds/default.jpg)' }}
+          style={{ backgroundImage: 'url(/background/default.jpg)' }}
         />
         <div 
           className="relative z-10 max-w-md w-full rounded-2xl p-6"
@@ -249,13 +227,8 @@ const GuestInvitation = () => {
       {/* Background Image - Dynamically loaded from event data */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-        onError={(e) => {
-          console.error("Background image failed to load, using default");
-          // If image fails to load, use default
-          if (backgroundImage !== '/backgrounds/default.jpg') {
-            setBackgroundImage('/backgrounds/default.jpg');
-          }
+        style={{ 
+          backgroundImage: `url(${event.background_image ? `/background/${event.background_image}` : '/background/default.jpg'})` 
         }}
       />
       
@@ -307,9 +280,7 @@ const GuestInvitation = () => {
               <Button
                 onClick={() => handleRSVP('yes')}
                 disabled={updating}
-                className={`gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 transition-all ${
-                  guest.rsvp_status === 'yes' ? 'border-2 border-green-400 shadow-lg shadow-green-400/50' : 'border border-white/30'
-                }`}
+                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -319,9 +290,7 @@ const GuestInvitation = () => {
               <Button
                 onClick={() => handleRSVP('maybe')}
                 disabled={updating}
-                className={`gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 transition-all ${
-                  guest.rsvp_status === 'maybe' ? 'border-2 border-amber-400 shadow-lg shadow-amber-400/50' : 'border border-white/30'
-                }`}
+                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <HelpCircle className="w-4 h-4" />
@@ -331,9 +300,7 @@ const GuestInvitation = () => {
               <Button
                 onClick={() => handleRSVP('no')}
                 disabled={updating}
-                className={`gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 transition-all ${
-                  guest.rsvp_status === 'no' ? 'border-2 border-red-400 shadow-lg shadow-red-400/50' : 'border border-white/30'
-                }`}
+                className={`gap-2 ${guest.rsvp_status === 'no' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
                 variant="outline"
               >
                 <XCircle className="w-4 h-4" />
@@ -344,7 +311,6 @@ const GuestInvitation = () => {
             {updating && (
               <div className="flex items-center justify-center gap-2 mt-4 text-sm text-white/70">
                 <CustomLoader />
-                <span>Updating your response...</span>
               </div>
             )}
           </div>
@@ -353,7 +319,7 @@ const GuestInvitation = () => {
           <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
             <Button
               onClick={() => setShowSchedule(true)}
-              className="gap-2 bg-white/10 backdrop-blur-sm text-white font-bold hover:bg-white/20 border border-white/30 transition-all"
+              className="true-glass-button gap-2"
               variant="outline"
             >
               <Calendar className="w-4 h-4" />
@@ -370,18 +336,8 @@ const GuestInvitation = () => {
             <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
             <Tabs defaultValue="gallery" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
-                <TabsTrigger 
-                  value="gallery" 
-                  className="text-white font-bold data-[state=active]:bg-white/20 data-[state=active]:border-2 data-[state=active]:border-purple-400"
-                >
-                  View Gallery
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="upload" 
-                  className="text-white font-bold data-[state=active]:bg-white/20 data-[state=active]:border-2 data-[state=active]:border-purple-400"
-                >
-                  Upload Media
-                </TabsTrigger>
+                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10 text-white font-bold">View Gallery</TabsTrigger>
+                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10 text-white font-bold">Upload Media</TabsTrigger>
               </TabsList>
               <TabsContent value="gallery" className="mt-6">
                 <MediaGallery eventId={event.id} />
@@ -411,12 +367,13 @@ const GuestInvitation = () => {
           onClick={() => setShowSchedule(false)}
         >
           <div 
-            className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-6 bg-white shadow-2xl"
+            className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-6"
+            style={glassCardStyle}
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowSchedule(false)}
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 transition-colors"
+              className="absolute top-4 right-4 text-white hover:text-white/70 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
