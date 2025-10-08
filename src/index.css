@@ -380,6 +380,20 @@ All colors MUST be HSL for proper theming.
 
 /* Add this to your index.css file after the previous glass styles */
 
+#fixed-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/background/default.jpg") center/cover no-repeat;
+  background-attachment: fixed;
+  will-change: transform;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
 /* TRUE TRANSPARENT GLASS - For Guest Invitation Page */
 @layer components {
   /* Base True Glass Card */
