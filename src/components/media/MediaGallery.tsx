@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, X, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { Loader2, X, ChevronLeft, ChevronRight, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Media {
   id: string;
@@ -30,6 +40,8 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
   const [loading, setLoading] = useState(true);
   const [showGallery, setShowGallery] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
+  const [mediaToDelete, setMediaToDelete] = useState<Media | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   const fetchMedia = async () => {
@@ -123,6 +135,42 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!mediaToDelete) return;
+
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('media')
+        .delete()
+        .eq('id', mediaToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Deleted",
+        description: "Media file deleted successfully"
+      });
+
+      // Close viewer if the deleted media was selected
+      if (selectedMedia?.id === mediaToDelete.id) {
+        setSelectedMedia(null);
+      }
+
+      fetchMedia();
+    } catch (error) {
+      console.error('Error deleting media:', error);
+      toast({
+        title: "Delete failed",
+        description: "Could not delete the file",
+        variant: "destructive"
+      });
+    } finally {
+      setDeleting(false);
+      setMediaToDelete(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -152,15 +200,16 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
       {/* Full Screen Gallery Modal */}
       {showGallery && (
         <Dialog open={showGallery} onOpenChange={setShowGallery}>
-          <DialogContent className="max-w-full max-h-full w-screen h-screen p-0 m-0">
-            <div className="relative w-full h-full bg-background overflow-y-auto">
+          <DialogContent className="max-w-full max-h-full w-screen h-screen p-0 m-0" style={{ backgroundColor: '#2d2d2d' }}>
+            <div className="relative w-full h-full overflow-y-auto" style={{ backgroundColor: '#2d2d2d' }}>
               {/* Header */}
-              <div className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b px-4 py-3 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Event Gallery</h2>
+              <div className="sticky top-0 z-20 backdrop-blur border-b px-4 py-3 flex items-center justify-between" style={{ backgroundColor: 'rgba(45, 45, 45, 0.95)' }}>
+                <h2 className="text-xl font-semibold text-white">Event Gallery</h2>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowGallery(false)}
+                  className="text-white hover:bg-white/10"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -172,7 +221,8 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
                   {media.map((item) => (
                     <div key={item.id} className="flex flex-col">
                       <div
-                        className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-muted"
+                        className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                        style={{ border: '2px solid rgba(255, 255, 255, 0.2)' }}
                         onClick={() => setSelectedMedia(item)}
                       >
                         {item.mime_type.startsWith('image/') ? (
@@ -189,10 +239,13 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
                             muted
                           />
                         )}
+                        {/* Uploader name overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                          <p className="text-xs text-white text-center">
+                            {guests[item.guest_id] || 'Unknown'}
+                          </p>
+                        </div>
                       </div>
-                      <p className="mt-2 text-sm text-muted-foreground text-center">
-                        {guests[item.guest_id] || 'Unknown'}
-                      </p>
                     </div>
                   ))}
                 </div>
@@ -210,8 +263,38 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
           guests={guests}
           onClose={() => setSelectedMedia(null)}
           onDownload={handleDownload}
+          onDelete={(item) => setMediaToDelete(item)}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!mediaToDelete} onOpenChange={() => setMediaToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Media</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this media file? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
@@ -223,9 +306,10 @@ interface MediaViewerProps {
   guests: Record<string, string>;
   onClose: () => void;
   onDownload: (media: Media) => void;
+  onDelete: (media: Media) => void;
 }
 
-const MediaViewer = ({ media, initialMedia, guests, onClose, onDownload }: MediaViewerProps) => {
+const MediaViewer = ({ media, initialMedia, guests, onClose, onDownload, onDelete }: MediaViewerProps) => {
   const [currentIndex, setCurrentIndex] = useState(
     media.findIndex(m => m.id === initialMedia.id)
   );
@@ -273,6 +357,16 @@ const MediaViewer = ({ media, initialMedia, guests, onClose, onDownload }: Media
             <Download className="w-6 h-6" />
           </Button>
 
+          {/* Delete Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-28 z-10 text-white hover:bg-red-500/20"
+            onClick={() => onDelete(currentMedia)}
+          >
+            <Trash2 className="w-6 h-6" />
+          </Button>
+
           {/* Navigation Arrows */}
           {media.length > 1 && (
             <>
@@ -314,9 +408,9 @@ const MediaViewer = ({ media, initialMedia, guests, onClose, onDownload }: Media
           </div>
 
           {/* Bottom Info */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded space-y-1 text-center">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black/70 px-4 py-2 rounded space-y-1 text-center">
             <div>{currentIndex + 1} / {media.length}</div>
-            <div>Uploaded by: {guests[currentMedia.guest_id] || 'Unknown'}</div>
+            <div className="text-xs">Uploaded by: {guests[currentMedia.guest_id] || 'Unknown'}</div>
           </div>
         </div>
       </DialogContent>
