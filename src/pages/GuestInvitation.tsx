@@ -174,13 +174,24 @@ const GuestInvitation = () => {
     }
   };
 
+  const glassCardStyle = {
+    background: 'rgba(255, 249, 249, 0.03)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(1.9px)',
+    WebkitBackdropFilter: 'blur(1.9px)',
+    border: '1px solid rgba(255, 249, 249, 0.55)',
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center">
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+          className="fixed inset-0 z-0"
           style={{ 
             backgroundImage: 'url(/background/default.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed'
           }}
         />
@@ -195,21 +206,18 @@ const GuestInvitation = () => {
     return (
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center p-4">
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+          className="fixed inset-0 z-0"
           style={{ 
             backgroundImage: 'url(/background/default.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed'
           }}
         />
         <div 
           className="relative z-10 max-w-md w-full rounded-2xl p-6"
-          style={{
-            background: 'rgba(255, 249, 249, 0.03)',
-            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(1.9px)',
-            WebkitBackdropFilter: 'blur(1.9px)',
-            border: '1px solid rgba(255, 249, 249, 0.55)',
-          }}
+          style={glassCardStyle}
         >
           <h2 className="text-2xl font-bold text-red-400 mb-2 glass-text-shadow">Invitation Not Found</h2>
           <p className="text-white/80 glass-text-shadow">
@@ -220,21 +228,21 @@ const GuestInvitation = () => {
     );
   }
 
-  const glassCardStyle = {
-    background: 'rgba(255, 249, 249, 0.03)',
-    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-    backdropFilter: 'blur(1.9px)',
-    WebkitBackdropFilter: 'blur(1.9px)',
-    border: '1px solid rgba(255, 249, 249, 0.55)',
-  };
+  // Determine background image - use event image if available, otherwise default
+  const backgroundImageUrl = event.background_image && event.background_image.trim() !== '' 
+    ? `/background/${event.background_image}` 
+    : '/background/default.jpg';
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      {/* Background Image - Fixed with proper fallback */}
+      {/* Fixed Background Image */}
       <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+        className="fixed inset-0 z-0"
         style={{ 
-          backgroundImage: `url(${event.background_image && event.background_image.trim() !== '' ? `/background/${event.background_image}` : '/background/default.jpg'})`,
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
         }}
       />
