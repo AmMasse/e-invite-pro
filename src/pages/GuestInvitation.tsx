@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X, Sparkles } from "lucide-react";
+import { Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,11 +25,40 @@ interface Event {
   description?: string;
   event_date?: string;
   organizer_name: string;
+  background_image?: string;
 }
 
 interface Invitation {
   custom_message?: string;
 }
+
+// Custom Loader Component
+const CustomLoader = () => (
+  <div className="flex flex-col items-center justify-center gap-4">
+    <div className="loader" />
+    <p className="text-white glass-text-shadow">Loading your invitation...</p>
+    <style>{`
+      .loader {
+        width: 50px;
+        aspect-ratio: 1;
+        color: #f03355;
+        --_c: no-repeat radial-gradient(farthest-side, currentColor 92%, #0000);
+        background: 
+          var(--_c) 50% 0    /12px 12px,
+          var(--_c) 50% 100% /12px 12px,
+          var(--_c) 100% 50% /12px 12px,
+          var(--_c) 0    50% /12px 12px,
+          var(--_c) 50%  50% /12px 12px,
+          conic-gradient(from 90deg at 4px 4px, #0000 90deg, currentColor 0)
+            -4px -4px / calc(50% + 2px) calc(50% + 2px);
+        animation: l8 0.3s infinite linear;
+      }
+      @keyframes l8 {
+        to { transform: rotate(1turn); }
+      }
+    `}</style>
+  </div>
+);
 
 const GuestInvitation = () => {
   const { uniqueId } = useParams<{ uniqueId: string }>();
@@ -40,6 +69,7 @@ const GuestInvitation = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string>("");
   const [showSchedule, setShowSchedule] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState('/backgrounds/default.jpg');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,6 +81,7 @@ const GuestInvitation = () => {
       }
 
       try {
+        // Fetch guest data
         const { data: guestData, error: guestError } = await supabase
           .from('guests')
           .select('*')
@@ -58,6 +89,7 @@ const GuestInvitation = () => {
           .single();
 
         if (guestError || !guestData) {
+          console.error("Guest fetch error:", guestError);
           setError("Invitation not found");
           setLoading(false);
           return;
@@ -65,20 +97,40 @@ const GuestInvitation = () => {
 
         setGuest(guestData);
 
+        // Fetch event data - explicitly select background_image
         const { data: eventData, error: eventError } = await supabase
           .from('events')
-          .select('*')
+          .select('id, name, description, event_date, organizer_name, background_image')
           .eq('id', guestData.event_id)
           .single();
 
         if (eventError || !eventData) {
+          console.error("Event fetch error:", eventError);
           setError("Event not found");
           setLoading(false);
           return;
         }
 
+        console.log("Event data:", eventData); // Debug log
+        console.log("Background image value:", eventData.background_image); // Debug log
+        
         setEvent(eventData);
 
+        // Set background image with fallback
+        if (eventData.background_image) {
+          // Construct the path - adjust this based on your actual storage structure
+          const imagePath = eventData.background_image.startsWith('/') 
+            ? eventData.background_image 
+            : `/backgrounds/${eventData.background_image}`;
+          
+          console.log("Setting background image to:", imagePath); // Debug log
+          setBackgroundImage(imagePath);
+        } else {
+          console.log("No background image found, using default"); // Debug log
+          setBackgroundImage('/backgrounds/default.jpg');
+        }
+
+        // Fetch invitation custom message
         const { data: invitationData } = await supabase
           .from('invitations')
           .select('custom_message')
@@ -152,8 +204,7 @@ const GuestInvitation = () => {
           style={{ backgroundImage: 'url(/backgrounds/default.jpg)' }}
         />
         <div className="relative z-10 text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
-          <p className="text-white glass-text-shadow">Loading your invitation...</p>
+          <CustomLoader />
         </div>
       </div>
     );
@@ -193,17 +244,19 @@ const GuestInvitation = () => {
     border: '1px solid rgba(255, 249, 249, 0.55)',
   };
 
-  // Construct background image URL from event data, with fallback
-  const backgroundImage = event.background_image 
-    ? `/backgrounds/${event.background_image}` 
-    : '/backgrounds/default.jpg';
-
   return (
     <div className="min-h-screen relative overflow-x-hidden">
       {/* Background Image - Dynamically loaded from event data */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${backgroundImage})` }}
+        onError={(e) => {
+          console.error("Background image failed to load, using default");
+          // If image fails to load, use default
+          if (backgroundImage !== '/backgrounds/default.jpg') {
+            setBackgroundImage('/backgrounds/default.jpg');
+          }
+        }}
       />
       
       {/* Content */}
@@ -290,7 +343,7 @@ const GuestInvitation = () => {
             
             {updating && (
               <div className="flex items-center justify-center gap-2 mt-4 text-sm text-white/70">
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <CustomLoader />
                 <span>Updating your response...</span>
               </div>
             )}
