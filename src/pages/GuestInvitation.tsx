@@ -178,8 +178,11 @@ const GuestInvitation = () => {
     return (
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center">
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/background/default.jpg)' }}
+          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+          style={{ 
+            backgroundImage: 'url(/background/default.jpg)',
+            backgroundAttachment: 'fixed'
+          }}
         />
         <div className="relative z-10 text-center">
           <CustomLoader />
@@ -192,8 +195,11 @@ const GuestInvitation = () => {
     return (
       <div className="min-h-screen relative overflow-x-hidden flex items-center justify-center p-4">
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/background/default.jpg)' }}
+          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+          style={{ 
+            backgroundImage: 'url(/background/default.jpg)',
+            backgroundAttachment: 'fixed'
+          }}
         />
         <div 
           className="relative z-10 max-w-md w-full rounded-2xl p-6"
@@ -224,11 +230,12 @@ const GuestInvitation = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      {/* Background Image - Dynamically loaded from event data */}
+      {/* Background Image - Fixed with proper fallback */}
       <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
         style={{ 
-          backgroundImage: `url(${event.background_image ? `/background/${event.background_image}` : '/background/default.jpg'})` 
+          backgroundImage: `url(${event.background_image && event.background_image.trim() !== '' ? `/background/${event.background_image}` : '/background/default.jpg'})`,
+          backgroundAttachment: 'fixed'
         }}
       />
       
@@ -360,24 +367,21 @@ const GuestInvitation = () => {
         </div>
       </div>
 
-      {/* Schedule Overlay */}
+      {/* Schedule Overlay - Full Screen Edge to Edge */}
       {showSchedule && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-          onClick={() => setShowSchedule(false)}
+          className="fixed inset-0 z-50 bg-black/80 overflow-y-auto"
         >
-          <div 
-            className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-2xl p-6"
-            style={glassCardStyle}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="min-h-screen relative py-8 px-4">
             <button
               onClick={() => setShowSchedule(false)}
-              className="absolute top-4 right-4 text-white hover:text-white/70 transition-colors"
+              className="fixed top-6 right-6 z-10 text-white hover:text-white/70 transition-colors bg-black/50 rounded-full p-2"
             >
               <X className="w-6 h-6" />
             </button>
-            <ItineraryTimeline eventId={guest.event_id} readonly={true} />
+            <div className="max-w-4xl mx-auto">
+              <ItineraryTimeline eventId={guest.event_id} readonly={true} />
+            </div>
           </div>
         </div>
       )}
