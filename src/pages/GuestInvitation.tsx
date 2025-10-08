@@ -72,6 +72,19 @@ const GuestInvitation = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const { toast } = useToast();
 
+  // Update background image dynamically
+  useEffect(() => {
+    if (event) {
+      const bgDiv = document.getElementById('fixed-bg');
+      if (bgDiv) {
+        const bgUrl = event.background_image && event.background_image.trim() !== '' 
+          ? `/background/${event.background_image}` 
+          : '/background/default.jpg';
+        bgDiv.style.backgroundImage = `url(${bgUrl})`;
+      }
+    }
+  }, [event]);
+
   useEffect(() => {
     const fetchInvitationData = async () => {
       if (!uniqueId) {
@@ -126,19 +139,6 @@ const GuestInvitation = () => {
 
     fetchInvitationData();
   }, [uniqueId]);
-
-  // 🧠 Dynamically update the global fixed background (new)
-  useEffect(() => {
-    const bg = document.getElementById('fixed-bg');
-    if (bg) {
-      const backgroundImageUrl =
-        event?.background_image && event.background_image.trim() !== ''
-          ? `/background/${event.background_image}`
-          : '/background/default.jpg';
-
-      bg.style.backgroundImage = `url(${backgroundImageUrl})`;
-    }
-  }, [event]);
 
   const handleRSVP = async (status: 'yes' | 'no' | 'maybe') => {
     if (!guest) return;
@@ -225,13 +225,137 @@ const GuestInvitation = () => {
     <div className="min-h-screen relative overflow-x-hidden">
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-12">
-        {/* [ everything else unchanged here ] */}
-        {/* same as before */}
+        <div className="max-w-3xl mx-auto space-y-6">
+          
+          {/* Event Details - TOP */}
+          <div className="rounded-2xl p-8 glass-text-shadow text-center" style={glassCardStyle}>
+            <h2 className="text-4xl font-bold mb-4 text-white">{event.name}</h2>
+            {event.description && (
+              <p className="text-white/90 mb-6 text-lg">{event.description}</p>
+            )}
+            {event.event_date && (
+              <div className="flex items-center justify-center gap-2 text-white/90">
+                <Calendar className="w-5 h-5 text-amber-400 glass-icon-glow" />
+                <span className="text-xl">{new Date(event.event_date).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Guest Info */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <h3 className="text-2xl font-bold mb-2 text-white">Hello, {guest.name}! 👋</h3>
+            <p className="text-white/80 mb-4">Your personal invitation to {event.name}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/70">Current RSVP Status:</span>
+              {getRSVPBadge(guest.rsvp_status)}
+            </div>
+          </div>
+
+          {/* Custom Message */}
+          {invitation?.custom_message && (
+            <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+              <p className="text-white/90 font-bold italic text-lg">{invitation.custom_message}</p>
+            </div>
+          )}
+
+          {/* RSVP Buttons */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <h3 className="text-xl font-bold mb-2 text-white">Please Respond</h3>
+            <p className="text-white/70 mb-4 text-sm">Let us know if you can make it</p>
+            <div className="grid grid-cols-3 gap-3">
+              <Button
+                onClick={() => handleRSVP('yes')}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'yes' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
+                variant="outline"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Yes
+              </Button>
+              
+              <Button
+                onClick={() => handleRSVP('maybe')}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'maybe' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
+                variant="outline"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Maybe
+              </Button>
+              
+              <Button
+                onClick={() => handleRSVP('no')}
+                disabled={updating}
+                className={`gap-2 ${guest.rsvp_status === 'no' ? 'bg-white text-black hover:bg-white/90' : 'true-glass-button'}`}
+                variant="outline"
+              >
+                <XCircle className="w-4 h-4" />
+                No
+              </Button>
+            </div>
+            
+            {updating && (
+              <div className="flex items-center justify-center gap-2 mt-4 text-sm text-white/70">
+                <CustomLoader />
+              </div>
+            )}
+          </div>
+
+          {/* Event Schedule Button */}
+          <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
+            <Button
+              onClick={() => setShowSchedule(true)}
+              className="true-glass-button gap-2"
+              variant="outline"
+            >
+              <Calendar className="w-4 h-4" />
+              Event Schedule
+            </Button>
+          </div>
+
+          {/* Gallery */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <div className="flex items-center gap-2 mb-2">
+              <Camera className="w-5 h-5 text-purple-400 glass-icon-glow" />
+              <h3 className="text-xl font-bold text-white">Event Gallery</h3>
+            </div>
+            <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
+            <Tabs defaultValue="gallery" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
+                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10 text-white font-bold">View Gallery</TabsTrigger>
+                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10 text-white font-bold">Upload Media</TabsTrigger>
+              </TabsList>
+              <TabsContent value="gallery" className="mt-6">
+                <MediaGallery eventId={event.id} />
+              </TabsContent>
+              <TabsContent value="upload" className="mt-6">
+                <MediaUpload 
+                  eventId={event.id}
+                  guestId={guest.id}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Footer - "You're Invited" */}
+          <div className="rounded-2xl p-8 text-center glass-text-shadow" style={glassCardStyle}>
+            <h1 className="text-4xl font-bold mb-2 text-white">You're Invited!</h1>
+            <p className="text-white/80">From {event.organizer_name}</p>
+          </div>
+
+        </div>
       </div>
 
-      {/* Schedule Overlay */}
+      {/* Schedule Overlay - Full Screen Edge to Edge */}
       {showSchedule && (
-        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-50 bg-black/80 overflow-y-auto"
+        >
           <div className="min-h-screen relative py-8 px-4">
             <button
               onClick={() => setShowSchedule(false)}
