@@ -219,7 +219,7 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
               <div className="p-4">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {media.map((item) => (
-                    <div key={item.id} className="flex flex-col">
+                    <div key={item.id}>
                       <div
                         className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                         style={{ border: '2px solid rgba(255, 255, 255, 0.2)' }}
@@ -239,12 +239,6 @@ export const MediaGallery = ({ eventId }: MediaGalleryProps) => {
                             muted
                           />
                         )}
-                        {/* Uploader name overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
-                          <p className="text-xs text-white text-center">
-                            {guests[item.guest_id] || 'Unknown'}
-                          </p>
-                        </div>
                       </div>
                     </div>
                   ))}
