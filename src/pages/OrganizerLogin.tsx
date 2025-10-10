@@ -58,14 +58,14 @@ const OrganizerLogin = () => {
             <div>
               <CardTitle className="text-2xl">Organizer Login</CardTitle>
               <CardDescription>
-                Enter your Organizer Name and password to access your dashboard
+                Enter your Event Name and password to access your dashboard
               </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="eventName">Organizer Name</Label>
+                <Label htmlFor="eventName">Event Name</Label>
                 <Input
                   id="eventName"
                   type="text"
