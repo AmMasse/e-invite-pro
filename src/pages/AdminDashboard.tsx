@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { LogOut, Shield, Database, BarChart3, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ExcelUpload from "@/components/admin/ExcelUpload";
+import MediaManagement from "@/components/admin/MediaManagement";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -101,8 +102,9 @@ const AdminDashboard = () => {
         </Card>
 
         {selectedEventId && (
-          <div className="mb-8">
+          <div className="space-y-8 mb-8">
             <ExcelUpload eventId={selectedEventId} />
+            <MediaManagement eventId={selectedEventId} />
           </div>
         )}
 
