@@ -46,6 +46,7 @@ export type Database = {
       }
       events: {
         Row: {
+          background_image: string | null
           created_at: string
           description: string | null
           event_date: string | null
@@ -56,6 +57,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          background_image?: string | null
           created_at?: string
           description?: string | null
           event_date?: string | null
@@ -66,6 +68,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          background_image?: string | null
           created_at?: string
           description?: string | null
           event_date?: string | null

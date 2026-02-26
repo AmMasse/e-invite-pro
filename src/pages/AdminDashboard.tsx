@@ -8,6 +8,7 @@ import { LogOut, Shield, Database, BarChart3, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ExcelUpload from "@/components/admin/ExcelUpload";
 import MediaManagement from "@/components/admin/MediaManagement";
+import CreateEventDialog from "@/components/admin/CreateEventDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -51,10 +52,13 @@ const AdminDashboard = () => {
             <h1 className="text-2xl font-bold text-accent">Master Admin Panel</h1>
             <p className="text-muted-foreground">Welcome, {user?.name}</p>
           </div>
-          <Button variant="outline" onClick={logout} className="gap-2">
-            <LogOut className="w-4 h-4" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <CreateEventDialog onEventCreated={fetchEvents} />
+            <Button variant="outline" onClick={logout} className="gap-2">
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+          </div>
         </div>
       </header>
 

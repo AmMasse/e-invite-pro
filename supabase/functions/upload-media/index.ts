@@ -15,9 +15,9 @@ serve(async (req) => {
 
   try {
     const formData = await req.formData();
-    const file = formData.get('file');
-    const eventId = formData.get('eventId');
-    const guestId = formData.get('guestId');
+    const file = formData.get('file') as File;
+    const eventId = formData.get('eventId') as string;
+    const guestId = formData.get('guestId') as string | null;
 
     if (!file || !eventId) {
       return new Response(JSON.stringify({
@@ -84,7 +84,7 @@ serve(async (req) => {
       }
 
       const bucketList = await listBucketsResponse.json();
-      const bucket = bucketList.buckets.find((b) => b.bucketName === b2BucketName);
+      const bucket = bucketList.buckets.find((b: any) => b.bucketName === b2BucketName);
 
       if (!bucket) {
         throw new Error(`Bucket "${b2BucketName}" not found`);
@@ -144,7 +144,7 @@ serve(async (req) => {
     // Save metadata to database
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl!, supabaseKey!);
 
     const { data, error } = await supabase.from('media').insert({
       event_id: eventId,
