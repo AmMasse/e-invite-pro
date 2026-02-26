@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, CheckCircle2, XCircle, HelpCircle, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ItineraryTimeline } from "@/components/organizer/ItineraryTimeline";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaUpload } from "@/components/media/MediaUpload";
 import { MediaGallery } from "@/components/media/MediaGallery";
 
@@ -70,6 +69,7 @@ const GuestInvitation = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string>("");
   const [showSchedule, setShowSchedule] = useState(false);
+  const [galleryView, setGalleryView] = useState<'gallery' | 'upload'>('gallery');
   const { toast } = useToast();
 
   // Update background image dynamically
@@ -249,11 +249,6 @@ const GuestInvitation = () => {
           {/* Guest Info */}
           <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
             <h3 className="text-2xl font-bold mb-2 text-white">Hello, {guest.name}! 👋</h3>
-            <p className="text-white/80 mb-4">Your personal invitation to {event.name}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-white/70">Current RSVP Status:</span>
-              {getRSVPBadge(guest.rsvp_status)}
-            </div>
           </div>
 
           {/* Custom Message */}
@@ -262,6 +257,62 @@ const GuestInvitation = () => {
               <p className="text-white/90 font-bold italic text-lg">{invitation.custom_message}</p>
             </div>
           )}
+
+          {/* Event Schedule Button */}
+          <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
+            <Button
+              onClick={() => setShowSchedule(true)}
+              className="true-glass-button gap-2"
+              variant="outline"
+            >
+              <Calendar className="w-4 h-4" />
+              Event Schedule
+            </Button>
+          </div>
+
+          {/* Gallery */}
+          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
+            <div className="flex items-center gap-2 mb-2">
+              <Camera className="w-5 h-5 text-purple-400 glass-icon-glow" />
+              <h3 className="text-xl font-bold text-white">Event Gallery</h3>
+            </div>
+            <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
+
+            {/* Glass toggle buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <Button
+                onClick={() => setGalleryView('gallery')}
+                className={`true-glass-button gap-2 ${galleryView === 'gallery' ? 'bg-white/20' : ''}`}
+                variant="outline"
+              >
+                View Gallery
+              </Button>
+              <Button
+                onClick={() => setGalleryView('upload')}
+                className={`true-glass-button gap-2 ${galleryView === 'upload' ? 'bg-white/20' : ''}`}
+                variant="outline"
+              >
+                Upload Media
+              </Button>
+            </div>
+
+            {/* Direct content render — no extra button layer */}
+            {galleryView === 'gallery' ? (
+              <MediaGallery eventId={event.id} />
+            ) : (
+              <MediaUpload eventId={event.id} guestId={guest.id} />
+            )}
+          </div>
+
+          {/* Footer - "You're Invited" */}
+          <div className="rounded-2xl p-8 text-center glass-text-shadow" style={glassCardStyle}>
+            <h1 className="text-4xl font-bold mb-2 text-white">You're Most Welcome!</h1>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-white/70">Current RSVP Status:</span>
+            {getRSVPBadge(guest.rsvp_status)}
+          </div>
 
           {/* RSVP Buttons */}
           <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
@@ -304,48 +355,6 @@ const GuestInvitation = () => {
                 <CustomLoader />
               </div>
             )}
-          </div>
-
-          {/* Event Schedule Button */}
-          <div className="rounded-2xl p-6 glass-text-shadow flex justify-center" style={glassCardStyle}>
-            <Button
-              onClick={() => setShowSchedule(true)}
-              className="true-glass-button gap-2"
-              variant="outline"
-            >
-              <Calendar className="w-4 h-4" />
-              Event Schedule
-            </Button>
-          </div>
-
-          {/* Gallery */}
-          <div className="rounded-2xl p-6 glass-text-shadow" style={glassCardStyle}>
-            <div className="flex items-center gap-2 mb-2">
-              <Camera className="w-5 h-5 text-purple-400 glass-icon-glow" />
-              <h3 className="text-xl font-bold text-white">Event Gallery</h3>
-            </div>
-            <p className="text-white/70 mb-6 text-sm">Share your memories from this event</p>
-            <Tabs defaultValue="gallery" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
-                <TabsTrigger value="gallery" className="data-[state=active]:bg-white/10 text-white font-bold">View Gallery</TabsTrigger>
-                <TabsTrigger value="upload" className="data-[state=active]:bg-white/10 text-white font-bold">Upload Media</TabsTrigger>
-              </TabsList>
-              <TabsContent value="gallery" className="mt-6">
-                <MediaGallery eventId={event.id} />
-              </TabsContent>
-              <TabsContent value="upload" className="mt-6">
-                <MediaUpload 
-                  eventId={event.id}
-                  guestId={guest.id}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Footer - "You're Invited" */}
-          <div className="rounded-2xl p-8 text-center glass-text-shadow" style={glassCardStyle}>
-            <h1 className="text-4xl font-bold mb-2 text-white">You're Invited!</h1>
-            <p className="text-white/80">From {event.organizer_name}</p>
           </div>
 
         </div>
