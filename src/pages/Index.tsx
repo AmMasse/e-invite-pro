@@ -160,7 +160,7 @@ const Index = () => {
         <div className="absolute inset-0" style={{ backdropFilter: 'blur(4px)' }} />
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative container mx-auto px-4 text-center text-white/70 text-sm md:text-base">
-          <p>© 2025 Domus Dei Tech | E-Invite Pro.</p>
+          <p>© 2025 Domus Dei Uganda | E-Invite Pro.</p>
         </div>
       </footer>
     </div>
